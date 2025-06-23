@@ -1,5 +1,5 @@
 # new-student
-<!DOCTYPE html><html lang="en"><head>
+
 <title> 课题组暑假学习内容</title>
   <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
