@@ -1776,7 +1776,7 @@ Original highlight.js style (c) Ivan Sagalaev <maniac@softwaremaniacs.org>
 
 <div><div class="preview" id="wmd-preview">
 
-	<div class="preview html_preview xsj_export_html"><h1 class="story_title">课题组暑假学习内容</h1><div class="story_tags"><span class="tag blue label">新建</span><span class="tag blue label">模板</span><span class="tag blue label">小书匠</span></div><hr class="xsj_hr xsj_minus">
+	<div class="preview html_preview xsj_export_html"><h1 class="story_title">课题组暑假学习内容</h1><div class="story_tags"><span class="tag blue label">2025年暑假</span><span class="tag blue label">视觉识别</span><span class="tag blue label">对比学习</span></div><hr class="xsj_hr xsj_minus">
 <h3 class="xsj_heading_hash xsj_heading xsj_heading_h3" id="120e69d8ee5ae8fe6af85e3808ae69cbae599a8e5ada6e4b9a0e6b7b1e5baa6e5ada6e4b9a0e3808b2021e8afbee7a88b_1"><div class="xiaoshujiang_element xsj_anchor">
   <a name="120e69d8ee5ae8fe6af85e3808ae69cbae599a8e5ada6e4b9a0e6b7b1e5baa6e5ada6e4b9a0e3808b2021e8afbee7a88b_1" class="blank_anchor_name"></a><a id="120e69d8ee5ae8fe6af85e3808ae69cbae599a8e5ada6e4b9a0e6b7b1e5baa6e5ada6e4b9a0e3808b2021e8afbee7a88b_1" class="blank_anchor_id"></a><a name="1-李宏毅机器学习深度学习2021课程" class="blank_anchor_name"></a><a id="1-李宏毅机器学习深度学习2021课程" class="blank_anchor_id"></a>
 </div>
