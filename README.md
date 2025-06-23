@@ -1773,7 +1773,7 @@ Original highlight.js style (c) Ivan Sagalaev <maniac@softwaremaniacs.org>
 }
 
 </style>
-</head><body>
+
 <div><div class="preview" id="wmd-preview">
 
 	<div class="preview html_preview xsj_export_html"><h1 class="story_title">课题组暑假学习内容</h1><div class="story_tags"><span class="tag blue label">新建</span><span class="tag blue label">模板</span><span class="tag blue label">小书匠</span></div><hr class="xsj_hr xsj_minus">
@@ -1851,5 +1851,5 @@ Original highlight.js style (c) Ivan Sagalaev <maniac@softwaremaniacs.org>
 </div>
 
 </div></div>
-</body></html>
+
 
