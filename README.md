@@ -1780,7 +1780,7 @@ Original highlight.js style (c) Ivan Sagalaev <maniac@softwaremaniacs.org>
 </div>
 <span class="xsj_heading_content">课题组暑假学习内容</span></h1>
 <hr class="xsj_hr xsj_minus">
-<p class="xsj_paragraph xsj_paragraph_level_0"><span class="mark mark_color mark_color_EE3F4D" style="color:#EE3F4D;background-color:rgba(238, 63, 77, 0.1)">任务6直接先做，然后先把任务1完成才学习任务23，之后看任务5，最后看任务6</span></p>
+<p class="xsj_paragraph xsj_paragraph_level_0"><span class="mark mark_color mark_color_EE3F4D" style="color:#EE3F4D;background-color:rgba(238, 63, 77, 0.1)">任务6直接先做，然后先把任务1完成才学习任务23，之后看任务4，最后看任务5</span></p>
 <h3 class="xsj_heading_hash xsj_heading xsj_heading_h3" id="120e69d8ee5ae8fe6af85e3808ae69cbae599a8e5ada6e4b9a0e6b7b1e5baa6e5ada6e4b9a0e3808b2021e8afbee7a88b_2"><div class="xiaoshujiang_element xsj_anchor">
   <a name="120e69d8ee5ae8fe6af85e3808ae69cbae599a8e5ada6e4b9a0e6b7b1e5baa6e5ada6e4b9a0e3808b2021e8afbee7a88b_2" class="blank_anchor_name"></a><a id="120e69d8ee5ae8fe6af85e3808ae69cbae599a8e5ada6e4b9a0e6b7b1e5baa6e5ada6e4b9a0e3808b2021e8afbee7a88b_2" class="blank_anchor_id"></a><a name="1-李宏毅机器学习深度学习2021课程" class="blank_anchor_name"></a><a id="1-李宏毅机器学习深度学习2021课程" class="blank_anchor_id"></a>
 </div>
