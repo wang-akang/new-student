@@ -1,6 +1,5 @@
 
- <title>课题组暑假学习内容</title>
-   
+<title> 课题组暑假学习内容</title>
   <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -1773,7 +1772,7 @@ Original highlight.js style (c) Ivan Sagalaev <maniac@softwaremaniacs.org>
 }
 
 </style>
-
+</head><body>
 <div><div class="preview" id="wmd-preview">
 
 	<div class="preview html_preview xsj_export_html"><div style="overflow: hidden; position: absolute; top: 0px; height: 1px; width: auto; padding: 0px; border: 0px; margin: 0px; text-align: left; text-indent: 0px; text-transform: none; line-height: normal; letter-spacing: normal; word-spacing: normal;"><svg><defs id="MathJax_SVG_glyphs"></defs></svg></div><h1 class="xsj_heading_hash xsj_heading xsj_heading_h1" id="e8afbee9a298e7bb84e69a91e58187e5ada6e4b9a0e58685e5aeb9_1"><div class="xiaoshujiang_element xsj_anchor">
@@ -1786,27 +1785,27 @@ Original highlight.js style (c) Ivan Sagalaev <maniac@softwaremaniacs.org>
 </div>
 <span class="xsj_heading_content">1. 李宏毅《机器学习/深度学习》2021课程</span></h3>
 <p class="xsj_paragraph xsj_paragraph_level_0">链接：<a href="https://www.bilibili.com/video/BV1JA411c7VT/?spm_id_from=333.1007.top_right_bar_window_default_collection.content.click&amp;vd_source=e0bb8b2fe300cbc88f970dcfdb978113" class="xsj_link xsj_manu_link">李宏毅《机器学习/深度学习》2021课程_哔哩哔哩</a><br>
-<span class="mark mark_color mark_color_EE3F4D" style="color:#EE3F4D;background-color:rgba(238, 63, 77, 0.1)">任务6直接先做，然后先把任务1完成才学习任务2345</span></p>
-<h3 class="xsj_heading_hash xsj_heading xsj_heading_h3" id="22020clip20e8aebae69687e98090e6aeb5e7b2bee8afbbe38090e8aebae69687e7b2bee8afbbe38091_3"><div class="xiaoshujiang_element xsj_anchor">
-  <a name="22020clip20e8aebae69687e98090e6aeb5e7b2bee8afbbe38090e8aebae69687e7b2bee8afbbe38091_3" class="blank_anchor_name"></a><a id="22020clip20e8aebae69687e98090e6aeb5e7b2bee8afbbe38090e8aebae69687e7b2bee8afbbe38091_3" class="blank_anchor_id"></a><a name="2-clip-论文逐段精读论文精读" class="blank_anchor_name"></a><a id="2-clip-论文逐段精读论文精读" class="blank_anchor_id"></a>
+<span class="mark mark_color mark_color_EE3F4D" style="color:#EE3F4D;background-color:rgba(238, 63, 77, 0.1)">任务6直接先做，然后先把任务1完成才学习任务23，之后看任务5，最后看任务6</span></p>
+<h3 class="xsj_heading_hash xsj_heading xsj_heading_h3" id="22020vite8aebae69687e98090e6aeb5e7b2bee8afbbe38090e8aebae69687e7b2bee8afbbe38091_3"><div class="xiaoshujiang_element xsj_anchor">
+  <a name="22020vite8aebae69687e98090e6aeb5e7b2bee8afbbe38090e8aebae69687e7b2bee8afbbe38091_3" class="blank_anchor_name"></a><a id="22020vite8aebae69687e98090e6aeb5e7b2bee8afbbe38090e8aebae69687e7b2bee8afbbe38091_3" class="blank_anchor_id"></a><a name="2-vit论文逐段精读论文精读" class="blank_anchor_name"></a><a id="2-vit论文逐段精读论文精读" class="blank_anchor_id"></a>
 </div>
-<span class="xsj_heading_content">2.  CLIP 论文逐段精读【论文精读】</span></h3>
-<p class="xsj_paragraph xsj_paragraph_level_0">链接：<a href="https://www.bilibili.com/video/BV1SL4y1s7LQ/?spm_id_from=333.337.search-card.all.click&amp;vd_source=e0bb8b2fe300cbc88f970dcfdb978113" class="xsj_link xsj_manu_link">CLIP 论文逐段精读【论文精读】哔哩哔哩 </a></p>
-<h3 class="xsj_heading_hash xsj_heading xsj_heading_h3" id="32020e5afb9e6af94e5ada6e4b9a0e8aebae69687e7bbbce8bfb0e38090e8aebae69687e7b2bee8afbbe38091_4"><div class="xiaoshujiang_element xsj_anchor">
-  <a name="32020e5afb9e6af94e5ada6e4b9a0e8aebae69687e7bbbce8bfb0e38090e8aebae69687e7b2bee8afbbe38091_4" class="blank_anchor_name"></a><a id="32020e5afb9e6af94e5ada6e4b9a0e8aebae69687e7bbbce8bfb0e38090e8aebae69687e7b2bee8afbbe38091_4" class="blank_anchor_id"></a><a name="3-对比学习论文综述论文精读" class="blank_anchor_name"></a><a id="3-对比学习论文综述论文精读" class="blank_anchor_id"></a>
-</div>
-<span class="xsj_heading_content">3.  对比学习论文综述【论文精读】</span></h3>
-<p class="xsj_paragraph xsj_paragraph_level_0">链接： <a href="https://www.bilibili.com/video/BV19S4y1M7hm/?spm_id_from=333.337.search-card.all.click&amp;vd_source=e0bb8b2fe300cbc88f970dcfdb978113" class="xsj_link xsj_manu_link">对比学习论文综述【论文精读】哔哩哔哩</a></p>
-<h3 class="xsj_heading_hash xsj_heading xsj_heading_h3" id="42020vite8aebae69687e98090e6aeb5e7b2bee8afbbe38090e8aebae69687e7b2bee8afbbe38091_5"><div class="xiaoshujiang_element xsj_anchor">
-  <a name="42020vite8aebae69687e98090e6aeb5e7b2bee8afbbe38090e8aebae69687e7b2bee8afbbe38091_5" class="blank_anchor_name"></a><a id="42020vite8aebae69687e98090e6aeb5e7b2bee8afbbe38090e8aebae69687e7b2bee8afbbe38091_5" class="blank_anchor_id"></a><a name="4-vit论文逐段精读论文精读" class="blank_anchor_name"></a><a id="4-vit论文逐段精读论文精读" class="blank_anchor_id"></a>
-</div>
-<span class="xsj_heading_content">4.  ViT论文逐段精读【论文精读】</span></h3>
+<span class="xsj_heading_content">2.  ViT论文逐段精读【论文精读】</span></h3>
 <p class="xsj_paragraph xsj_paragraph_level_0">链接：<a href="https://www.bilibili.com/video/BV15P4y137jb/?spm_id_from=333.788.videopod.sections&amp;vd_source=68b963749fcc2e6dfd103676fb26daaf" class="xsj_link xsj_manu_link">ViT论文逐段精读【论文精读】哔哩哔哩</a></p>
-<h3 class="xsj_heading_hash xsj_heading xsj_heading_h3" id="52020moco20e8aebae69687e98090e6aeb5e7b2bee8afbbe38090e8aebae69687e7b2bee8afbbe38091_6"><div class="xiaoshujiang_element xsj_anchor">
-  <a name="52020moco20e8aebae69687e98090e6aeb5e7b2bee8afbbe38090e8aebae69687e7b2bee8afbbe38091_6" class="blank_anchor_name"></a><a id="52020moco20e8aebae69687e98090e6aeb5e7b2bee8afbbe38090e8aebae69687e7b2bee8afbbe38091_6" class="blank_anchor_id"></a><a name="5-moco-论文逐段精读论文精读" class="blank_anchor_name"></a><a id="5-moco-论文逐段精读论文精读" class="blank_anchor_id"></a>
+<h3 class="xsj_heading_hash xsj_heading xsj_heading_h3" id="32020moco20e8aebae69687e98090e6aeb5e7b2bee8afbbe38090e8aebae69687e7b2bee8afbbe38091_4"><div class="xiaoshujiang_element xsj_anchor">
+  <a name="32020moco20e8aebae69687e98090e6aeb5e7b2bee8afbbe38090e8aebae69687e7b2bee8afbbe38091_4" class="blank_anchor_name"></a><a id="32020moco20e8aebae69687e98090e6aeb5e7b2bee8afbbe38090e8aebae69687e7b2bee8afbbe38091_4" class="blank_anchor_id"></a><a name="3-moco-论文逐段精读论文精读" class="blank_anchor_name"></a><a id="3-moco-论文逐段精读论文精读" class="blank_anchor_id"></a>
 </div>
-<span class="xsj_heading_content">5.  MoCo 论文逐段精读【论文精读】</span></h3>
+<span class="xsj_heading_content">3.  MoCo 论文逐段精读【论文精读】</span></h3>
 <p class="xsj_paragraph xsj_paragraph_level_0">链接：<a href="https://www.bilibili.com/video/BV1C3411s7t9/?spm_id_from=333.788.videopod.sections&amp;vd_source=68b963749fcc2e6dfd103676fb26daaf" class="xsj_link xsj_manu_link">MoCo 论文逐段精读【论文精读】哔哩哔哩</a></p>
+<h3 class="xsj_heading_hash xsj_heading xsj_heading_h3" id="42020e5afb9e6af94e5ada6e4b9a0e8aebae69687e7bbbce8bfb0e38090e8aebae69687e7b2bee8afbbe38091_5"><div class="xiaoshujiang_element xsj_anchor">
+  <a name="42020e5afb9e6af94e5ada6e4b9a0e8aebae69687e7bbbce8bfb0e38090e8aebae69687e7b2bee8afbbe38091_5" class="blank_anchor_name"></a><a id="42020e5afb9e6af94e5ada6e4b9a0e8aebae69687e7bbbce8bfb0e38090e8aebae69687e7b2bee8afbbe38091_5" class="blank_anchor_id"></a><a name="4-对比学习论文综述论文精读" class="blank_anchor_name"></a><a id="4-对比学习论文综述论文精读" class="blank_anchor_id"></a>
+</div>
+<span class="xsj_heading_content">4.  对比学习论文综述【论文精读】</span></h3>
+<p class="xsj_paragraph xsj_paragraph_level_0">链接： <a href="https://www.bilibili.com/video/BV19S4y1M7hm/?spm_id_from=333.337.search-card.all.click&amp;vd_source=e0bb8b2fe300cbc88f970dcfdb978113" class="xsj_link xsj_manu_link">对比学习论文综述【论文精读】哔哩哔哩</a></p>
+<h3 class="xsj_heading_hash xsj_heading xsj_heading_h3" id="52020clip20e8aebae69687e98090e6aeb5e7b2bee8afbbe38090e8aebae69687e7b2bee8afbbe38091_6"><div class="xiaoshujiang_element xsj_anchor">
+  <a name="52020clip20e8aebae69687e98090e6aeb5e7b2bee8afbbe38090e8aebae69687e7b2bee8afbbe38091_6" class="blank_anchor_name"></a><a id="52020clip20e8aebae69687e98090e6aeb5e7b2bee8afbbe38090e8aebae69687e7b2bee8afbbe38091_6" class="blank_anchor_id"></a><a name="5-clip-论文逐段精读论文精读" class="blank_anchor_name"></a><a id="5-clip-论文逐段精读论文精读" class="blank_anchor_id"></a>
+</div>
+<span class="xsj_heading_content">5.  CLIP 论文逐段精读【论文精读】</span></h3>
+<p class="xsj_paragraph xsj_paragraph_level_0">链接：<a href="https://www.bilibili.com/video/BV1SL4y1s7LQ/?spm_id_from=333.337.search-card.all.click&amp;vd_source=e0bb8b2fe300cbc88f970dcfdb978113" class="xsj_link xsj_manu_link">CLIP 论文逐段精读【论文精读】哔哩哔哩 </a></p>
 <h3 class="xsj_heading_hash xsj_heading xsj_heading_h3" id="620e5b086e4b88be99da2markdowne69687e4bbb6e58aa0e585a5e4bda0e79a84githube4bb93e5ba93_7"><div class="xiaoshujiang_element xsj_anchor">
   <a name="620e5b086e4b88be99da2markdowne69687e4bbb6e58aa0e585a5e4bda0e79a84githube4bb93e5ba93_7" class="blank_anchor_name"></a><a id="620e5b086e4b88be99da2markdowne69687e4bbb6e58aa0e585a5e4bda0e79a84githube4bb93e5ba93_7" class="blank_anchor_id"></a><a name="6-将下面markdown文件加入你的github仓库" class="blank_anchor_name"></a><a id="6-将下面markdown文件加入你的github仓库" class="blank_anchor_id"></a>
 </div>
@@ -1855,5 +1854,5 @@ Original highlight.js style (c) Ivan Sagalaev <maniac@softwaremaniacs.org>
 </div>
 
 </div></div>
-
+</body></html>
 
