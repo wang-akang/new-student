@@ -1784,7 +1784,7 @@ Original highlight.js style (c) Ivan Sagalaev <maniac@softwaremaniacs.org>
 <h3 class="xsj_heading_hash xsj_heading xsj_heading_h3" id="120e69d8ee5ae8fe6af85e3808ae69cbae599a8e5ada6e4b9a0e6b7b1e5baa6e5ada6e4b9a0e3808b2021e8afbee7a88b_2"><div class="xiaoshujiang_element xsj_anchor">
   <a name="120e69d8ee5ae8fe6af85e3808ae69cbae599a8e5ada6e4b9a0e6b7b1e5baa6e5ada6e4b9a0e3808b2021e8afbee7a88b_2" class="blank_anchor_name"></a><a id="120e69d8ee5ae8fe6af85e3808ae69cbae599a8e5ada6e4b9a0e6b7b1e5baa6e5ada6e4b9a0e3808b2021e8afbee7a88b_2" class="blank_anchor_id"></a><a name="1-李宏毅机器学习深度学习2021课程" class="blank_anchor_name"></a><a id="1-李宏毅机器学习深度学习2021课程" class="blank_anchor_id"></a>
 </div>
-<span class="xsj_heading_content">1. 李宏毅《机器学习/深度学习》2021课程</span></h3>
+<span class="xsj_heading_content">1. 李宏毅《机器学习/深度学习》2021课程（只需要看到transformer部分，生成对抗网络后面不需要看）</span></h3>
 <p class="xsj_paragraph xsj_paragraph_level_0">链接：<a href="https://www.bilibili.com/video/BV1JA411c7VT/?spm_id_from=333.1007.top_right_bar_window_default_collection.content.click&amp;vd_source=e0bb8b2fe300cbc88f970dcfdb978113" class="xsj_link xsj_manu_link">李宏毅《机器学习/深度学习》2021课程_哔哩哔哩</a></p>
 <h3 class="xsj_heading_hash xsj_heading xsj_heading_h3" id="22020vite8aebae69687e98090e6aeb5e7b2bee8afbbe38090e8aebae69687e7b2bee8afbbe38091_3"><div class="xiaoshujiang_element xsj_anchor">
   <a name="22020vite8aebae69687e98090e6aeb5e7b2bee8afbbe38090e8aebae69687e7b2bee8afbbe38091_3" class="blank_anchor_name"></a><a id="22020vite8aebae69687e98090e6aeb5e7b2bee8afbbe38090e8aebae69687e7b2bee8afbbe38091_3" class="blank_anchor_id"></a><a name="2-vit论文逐段精读论文精读" class="blank_anchor_name"></a><a id="2-vit论文逐段精读论文精读" class="blank_anchor_id"></a>
