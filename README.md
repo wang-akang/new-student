@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head>
+
 <title> 课题组暑假学习内容</title>
   <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
@@ -1772,7 +1772,7 @@ Original highlight.js style (c) Ivan Sagalaev <maniac@softwaremaniacs.org>
 }
 
 </style>
-</head><body>
+
 <div><div class="preview" id="wmd-preview">
 
 	<div class="preview html_preview xsj_export_html"><div style="overflow: hidden; position: absolute; top: 0px; height: 1px; width: auto; padding: 0px; border: 0px; margin: 0px; text-align: left; text-indent: 0px; text-transform: none; line-height: normal; letter-spacing: normal; word-spacing: normal;"><svg><defs id="MathJax_SVG_glyphs"></defs></svg></div><h2 class="xsj_heading_hash xsj_heading xsj_heading_h2" id="e7acace4b880e983a8e58886efbc9ae59fbae7a180e79fa5e8af86e5ada6e4b9a0_1"><div class="xiaoshujiang_element xsj_anchor">
@@ -1830,5 +1830,4 @@ Original highlight.js style (c) Ivan Sagalaev <maniac@softwaremaniacs.org>
 </div>
 
 </div></div>
-</body></html>
 
