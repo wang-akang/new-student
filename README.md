@@ -1779,7 +1779,7 @@ Original highlight.js style (c) Ivan Sagalaev <maniac@softwaremaniacs.org>
   <a name="e7acace4b880e983a8e58886efbc9ae59fbae7a180e79fa5e8af86e5ada6e4b9a0_1" class="blank_anchor_name"></a><a id="e7acace4b880e983a8e58886efbc9ae59fbae7a180e79fa5e8af86e5ada6e4b9a0_1" class="blank_anchor_id"></a><a name="第一部分基础知识学习" class="blank_anchor_name"></a><a id="第一部分基础知识学习" class="blank_anchor_id"></a>
 </div>
 <span class="xsj_heading_content">第一部分：基础知识学习</span></h2>
-<p class="xsj_paragraph xsj_paragraph_level_0"><span class="mark mark_color mark_color_EE3F4D" style="color:#EE3F4D;background-color:rgba(238, 63, 77, 0.1)">学习顺序：先把任务1完成才学习任务23，之后看任务5，最后看任务6</span></p>
+<p class="xsj_paragraph xsj_paragraph_level_0"><span class="mark mark_color mark_color_EE3F4D" style="color:#EE3F4D;background-color:rgba(238, 63, 77, 0.1)">学习顺序：先学任务1，之后学任务2345</span></p>
 <ol class="markdown_ol">
 <li><strong class="markdown_strong_asterisk">李宏毅《机器学习/深度学习》2021课程</strong><br>
 <span class="mark mark_color mark_color_619AC3" style="color:#619AC3;background-color:rgba(97, 154, 195, 0.1)">只需要看到transformer部分，生成对抗网络后面不需要看</span><br>
