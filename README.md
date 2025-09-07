@@ -1,5 +1,5 @@
 
-<title> 课题组暑假学习内容</title>
+<title> 课题组</title>
   <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -1794,12 +1794,8 @@ Original highlight.js style (c) Ivan Sagalaev <maniac@softwaremaniacs.org>
 链接：<a href="https://www.bilibili.com/video/BV1SL4y1s7LQ/?spm_id_from=333.337.search-card.all.click&amp;vd_source=e0bb8b2fe300cbc88f970dcfdb978113" class="xsj_link xsj_manu_link">CLIP 论文逐段精读【论文精读】哔哩哔哩 </a></li>
 </ol>
 <p class="xsj_paragraph xsj_paragraph_level_0"><span class="mark mark_color mark_color_EE3F4D" style="color:#EE3F4D;background-color:rgba(238, 63, 77, 0.1)">此外，你还需要了解DINO-V1,V2,V3，SAMv2等视觉基础模型。</span></p>
-<h3 class="xsj_heading_hash xsj_heading xsj_heading_h3" id="_2"><div class="xiaoshujiang_element xsj_anchor">
-  <a name="_2" class="blank_anchor_name"></a><a id="_2" class="blank_anchor_id"></a>
-</div>
-<span class="xsj_heading_content"></span></h3>
-<h2 class="xsj_heading_hash xsj_heading xsj_heading_h2" id="e7acace4ba8ce983a8e58886efbc9ae7a094e7a9b6e5b7a5e4bd9ce5bc80e5b195_3"><div class="xiaoshujiang_element xsj_anchor">
-  <a name="e7acace4ba8ce983a8e58886efbc9ae7a094e7a9b6e5b7a5e4bd9ce5bc80e5b195_3" class="blank_anchor_name"></a><a id="e7acace4ba8ce983a8e58886efbc9ae7a094e7a9b6e5b7a5e4bd9ce5bc80e5b195_3" class="blank_anchor_id"></a><a name="第二部分研究工作开展" class="blank_anchor_name"></a><a id="第二部分研究工作开展" class="blank_anchor_id"></a>
+<h2 class="xsj_heading_hash xsj_heading xsj_heading_h2" id="e7acace4ba8ce983a8e58886efbc9ae7a094e7a9b6e5b7a5e4bd9ce5bc80e5b195_2"><div class="xiaoshujiang_element xsj_anchor">
+  <a name="e7acace4ba8ce983a8e58886efbc9ae7a094e7a9b6e5b7a5e4bd9ce5bc80e5b195_2" class="blank_anchor_name"></a><a id="e7acace4ba8ce983a8e58886efbc9ae7a094e7a9b6e5b7a5e4bd9ce5bc80e5b195_2" class="blank_anchor_id"></a><a name="第二部分研究工作开展" class="blank_anchor_name"></a><a id="第二部分研究工作开展" class="blank_anchor_id"></a>
 </div>
 <span class="xsj_heading_content">第二部分：研究工作开展</span></h2>
 <ol class="markdown_ol">
@@ -1817,8 +1813,8 @@ Original highlight.js style (c) Ivan Sagalaev <maniac@softwaremaniacs.org>
 <span class="mark mark_color mark_color_EE3F4D" style="color:#EE3F4D;background-color:rgba(238, 63, 77, 0.1)">精读是指搞清楚文章以及代码的所有细节；</span></li>
 <li><span class="xsj_placeholder_span"></span>我们一起讨论潜在的解决方案。</li>
 </ol>
-<h2 class="xsj_heading_hash xsj_heading xsj_heading_h2" id="e7acace4b889e983a8e58886efbc9ae5bbbae8aeae_4"><div class="xiaoshujiang_element xsj_anchor">
-  <a name="e7acace4b889e983a8e58886efbc9ae5bbbae8aeae_4" class="blank_anchor_name"></a><a id="e7acace4b889e983a8e58886efbc9ae5bbbae8aeae_4" class="blank_anchor_id"></a><a name="第三部分建议" class="blank_anchor_name"></a><a id="第三部分建议" class="blank_anchor_id"></a>
+<h2 class="xsj_heading_hash xsj_heading xsj_heading_h2" id="e7acace4b889e983a8e58886efbc9ae5bbbae8aeae_3"><div class="xiaoshujiang_element xsj_anchor">
+  <a name="e7acace4b889e983a8e58886efbc9ae5bbbae8aeae_3" class="blank_anchor_name"></a><a id="e7acace4b889e983a8e58886efbc9ae5bbbae8aeae_3" class="blank_anchor_id"></a><a name="第三部分建议" class="blank_anchor_name"></a><a id="第三部分建议" class="blank_anchor_id"></a>
 </div>
 <span class="xsj_heading_content">第三部分：建议</span></h2>
 <ol class="markdown_ol">
@@ -1830,4 +1826,5 @@ Original highlight.js style (c) Ivan Sagalaev <maniac@softwaremaniacs.org>
 </div>
 
 </div></div>
+
 
