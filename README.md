@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <style type="text/css">
 #wmd-preview{
-  width: 120%; 
+ 
   max-width: 380mm;
   margin: 0 auto;
 }
