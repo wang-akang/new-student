@@ -5,7 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <style type="text/css">
 #wmd-preview{
-  max-width: 280mm;
+  width: 90%; /* 比例宽度 */
+  max-width: 380mm;
   margin: 0 auto;
 }
 /* normal start */
