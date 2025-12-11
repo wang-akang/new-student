@@ -1,0 +1,1548 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SAM3 Architecture - Interactive Whiteboard</title>
+    <style>
+        :root {
+            --bg-color: #f0f2f5;
+            --panel-bg: #ffffff;
+            --border-color: #d1d9e6;
+            --text-color: #333333;
+            --accent-color: #0066cc;
+            --secondary-color: #e74c3c;
+            --dim-color: #7f8c8d;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.05), 0 1px 3px rgba(0, 0, 0, 0.1);
+            --shadow-hover: 0 10px 15px rgba(0, 0, 0, 0.1), 0 4px 6px rgba(0, 0, 0, 0.05);
+            --font-mono: 'Consolas', 'Monaco', 'Courier New', monospace;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: 'Segoe UI', sans-serif;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            background-image:
+                radial-gradient(#d1d9e6 1px, transparent 1px);
+            background-size: 20px 20px;
+        }
+
+        h1 {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 100;
+            margin: 0;
+            padding: 10px 30px;
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(5px);
+            border-radius: 30px;
+            box-shadow: var(--shadow);
+            font-family: var(--font-mono);
+            color: var(--accent-color);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            pointer-events: none;
+        }
+
+        .main-container {
+            display: flex;
+            flex-direction: column;
+            gap: 40px;
+            max-width: 1600px;
+            margin: 100px auto;
+            padding: 20px;
+        }
+
+        /* Section Containers */
+        .section-container {
+            border: 1px solid var(--border-color);
+            background: var(--panel-bg);
+            padding: 25px;
+            position: relative;
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            transition: all 0.3s ease;
+        }
+
+        .section-container:hover {
+            border-color: var(--accent-color);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .section-title {
+            font-family: var(--font-mono);
+            color: var(--accent-color);
+            font-size: 1.4em;
+            margin-bottom: 25px;
+            border-bottom: 2px solid var(--bg-color);
+            padding-bottom: 10px;
+            font-weight: bold;
+        }
+
+        .section-content {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        /* Modules */
+        .module {
+            border: 1px solid var(--border-color);
+            background: #f8f9fa;
+            padding: 15px;
+            min-width: 220px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            border-radius: 8px;
+            transition: all 0.2s;
+        }
+
+        .module:hover {
+            background: #fff;
+            border-color: var(--accent-color);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow);
+        }
+
+        .module-name {
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 8px;
+            font-size: 1em;
+        }
+
+        .module-dim {
+            font-family: var(--font-mono);
+            color: var(--dim-color);
+            font-size: 0.85em;
+            background: #fff;
+            padding: 4px 8px;
+            border-radius: 4px;
+            border: 1px solid #eee;
+            align-self: flex-start;
+        }
+
+        /* Grid for Blocks */
+        .block-grid-container {
+            width: 100%;
+        }
+
+        .block-grid-title {
+            font-family: var(--font-mono);
+            color: var(--secondary-color);
+            font-size: 0.9em;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            font-weight: bold;
+        }
+
+        .block-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(50px, 1fr));
+            gap: 8px;
+        }
+
+        .chip {
+            aspect-ratio: 1;
+            background: #fff;
+            border: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            border-radius: 6px;
+            font-family: var(--font-mono);
+            font-size: 0.8em;
+            color: var(--dim-color);
+            font-weight: bold;
+        }
+
+        .chip:hover {
+            border-color: var(--accent-color);
+            color: var(--accent-color);
+            transform: scale(1.1);
+            box-shadow: 0 2px 8px rgba(0, 102, 204, 0.2);
+            z-index: 10;
+        }
+
+        .chip.active {
+            background: var(--accent-color);
+            color: #fff;
+            border-color: var(--accent-color);
+        }
+
+        /* Detail Panel */
+        #detail-panel {
+            position: fixed;
+            top: 80px;
+            right: 20px;
+            width: 320px;
+            max-height: 80vh;
+            background: rgba(255, 255, 255, 0.95);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 20px;
+            overflow-y: auto;
+            z-index: 1000;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            transform: translateX(120%);
+            transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            backdrop-filter: blur(10px);
+        }
+
+        #detail-panel.visible {
+            transform: translateX(0);
+        }
+
+        #detail-panel h2 {
+            color: var(--accent-color);
+            font-family: var(--font-mono);
+            margin-top: 0;
+            border-bottom: 2px solid var(--bg-color);
+            padding-bottom: 10px;
+            font-size: 1.2em;
+        }
+
+        .detail-item {
+            margin-bottom: 12px;
+            border-bottom: 1px solid #f0f0f0;
+            padding-bottom: 8px;
+        }
+
+        .detail-key {
+            color: var(--dim-color);
+            font-size: 0.8em;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .detail-value {
+            color: #333;
+            font-family: var(--font-mono);
+            font-size: 0.95em;
+            margin-top: 4px;
+        }
+
+
+
+        /* Connector Lines */
+        .connector-line {
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--border-color), transparent);
+            width: 100%;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h1>SAM3 Architecture</h1>
+
+    <div id="main-root" class="main-container">
+        <!-- Content will be generated here -->
+    </div>
+
+    <div id="detail-panel">
+        <h2 id="panel-title">Details</h2>
+        <div id="panel-content"></div>
+    </div>
+
+    <script>
+        const rawData = `
+backbone.vision_backbone.trunk.patch_embed.proj: (1, 1024, 72, 72)
+backbone.vision_backbone.trunk.patch_embed: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.ln_pre: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.0.norm1: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.0.attn.qkv: (9, 24, 24, 3072)
+backbone.vision_backbone.trunk.blocks.0.attn.proj: (9, 24, 24, 1024)
+backbone.vision_backbone.trunk.blocks.0.attn: (9, 24, 24, 1024)
+backbone.vision_backbone.trunk.blocks.0.ls1: (9, 24, 24, 1024)
+backbone.vision_backbone.trunk.blocks.0.drop_path: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.0.dropout: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.0.norm2: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.0.mlp.fc1: (1, 72, 72, 4736)
+backbone.vision_backbone.trunk.blocks.0.mlp.act: (1, 72, 72, 4736)
+backbone.vision_backbone.trunk.blocks.0.mlp.drop1: (1, 72, 72, 4736)
+backbone.vision_backbone.trunk.blocks.0.mlp.norm: (1, 72, 72, 4736)
+backbone.vision_backbone.trunk.blocks.0.mlp.fc2: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.0.mlp.drop2: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.0.mlp: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.0.ls2: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.0: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.1.norm1: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.1.attn.qkv: (9, 24, 24, 3072)
+backbone.vision_backbone.trunk.blocks.1.attn.proj: (9, 24, 24, 1024)
+backbone.vision_backbone.trunk.blocks.1.attn: (9, 24, 24, 1024)
+backbone.vision_backbone.trunk.blocks.1.ls1: (9, 24, 24, 1024)
+backbone.vision_backbone.trunk.blocks.1.drop_path: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.1.dropout: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.1.norm2: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.1.mlp.fc1: (1, 72, 72, 4736)
+backbone.vision_backbone.trunk.blocks.1.mlp.act: (1, 72, 72, 4736)
+backbone.vision_backbone.trunk.blocks.1.mlp.drop1: (1, 72, 72, 4736)
+backbone.vision_backbone.trunk.blocks.1.mlp.norm: (1, 72, 72, 4736)
+backbone.vision_backbone.trunk.blocks.1.mlp.fc2: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.1.mlp.drop2: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.1.mlp: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.1.ls2: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.1: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.2.norm1: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.2.attn.qkv: (9, 24, 24, 3072)
+backbone.vision_backbone.trunk.blocks.2.attn.proj: (9, 24, 24, 1024)
+backbone.vision_backbone.trunk.blocks.2.attn: (9, 24, 24, 1024)
+backbone.vision_backbone.trunk.blocks.2.ls1: (9, 24, 24, 1024)
+backbone.vision_backbone.trunk.blocks.2.drop_path: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.2.dropout: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.2.norm2: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.2.mlp.fc1: (1, 72, 72, 4736)
+backbone.vision_backbone.trunk.blocks.2.mlp.act: (1, 72, 72, 4736)
+backbone.vision_backbone.trunk.blocks.2.mlp.drop1: (1, 72, 72, 4736)
+backbone.vision_backbone.trunk.blocks.2.mlp.norm: (1, 72, 72, 4736)
+backbone.vision_backbone.trunk.blocks.2.mlp.fc2: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.2.mlp.drop2: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.2.mlp: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.2.ls2: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.2: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.3.norm1: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.3.attn.qkv: (9, 24, 24, 3072)
+backbone.vision_backbone.trunk.blocks.3.attn.proj: (9, 24, 24, 1024)
+backbone.vision_backbone.trunk.blocks.3.attn: (9, 24, 24, 1024)
+backbone.vision_backbone.trunk.blocks.3.ls1: (9, 24, 24, 1024)
+backbone.vision_backbone.trunk.blocks.3.drop_path: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.3.dropout: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.3.norm2: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.3.mlp.fc1: (1, 72, 72, 4736)
+backbone.vision_backbone.trunk.blocks.3.mlp.act: (1, 72, 72, 4736)
+backbone.vision_backbone.trunk.blocks.3.mlp.drop1: (1, 72, 72, 4736)
+backbone.vision_backbone.trunk.blocks.3.mlp.norm: (1, 72, 72, 4736)
+backbone.vision_backbone.trunk.blocks.3.mlp.fc2: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.3.mlp.drop2: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.3.mlp: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.3.ls2: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.3: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.4.norm1: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.4.attn.qkv: (9, 24, 24, 3072)
+backbone.vision_backbone.trunk.blocks.4.attn.proj: (9, 24, 24, 1024)
+backbone.vision_backbone.trunk.blocks.4.attn: (9, 24, 24, 1024)
+backbone.vision_backbone.trunk.blocks.4.ls1: (9, 24, 24, 1024)
+backbone.vision_backbone.trunk.blocks.4.drop_path: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.4.dropout: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.4.norm2: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.4.mlp.fc1: (1, 72, 72, 4736)
+backbone.vision_backbone.trunk.blocks.4.mlp.act: (1, 72, 72, 4736)
+backbone.vision_backbone.trunk.blocks.4.mlp.drop1: (1, 72, 72, 4736)
+backbone.vision_backbone.trunk.blocks.4.mlp.norm: (1, 72, 72, 4736)
+backbone.vision_backbone.trunk.blocks.4.mlp.fc2: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.4.mlp.drop2: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.4.mlp: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.4.ls2: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.4: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.5.norm1: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.5.attn.qkv: (9, 24, 24, 3072)
+backbone.vision_backbone.trunk.blocks.5.attn.proj: (9, 24, 24, 1024)
+backbone.vision_backbone.trunk.blocks.5.attn: (9, 24, 24, 1024)
+backbone.vision_backbone.trunk.blocks.5.ls1: (9, 24, 24, 1024)
+backbone.vision_backbone.trunk.blocks.5.drop_path: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.5.dropout: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.5.norm2: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.5.mlp.fc1: (1, 72, 72, 4736)
+backbone.vision_backbone.trunk.blocks.5.mlp.act: (1, 72, 72, 4736)
+backbone.vision_backbone.trunk.blocks.5.mlp.drop1: (1, 72, 72, 4736)
+backbone.vision_backbone.trunk.blocks.5.mlp.norm: (1, 72, 72, 4736)
+backbone.vision_backbone.trunk.blocks.5.mlp.fc2: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.5.mlp.drop2: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.5.mlp: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.5.ls2: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.5: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.6.norm1: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.6.attn.qkv: (9, 24, 24, 3072)
+backbone.vision_backbone.trunk.blocks.6.attn.proj: (9, 24, 24, 1024)
+backbone.vision_backbone.trunk.blocks.6.attn: (9, 24, 24, 1024)
+backbone.vision_backbone.trunk.blocks.6.ls1: (9, 24, 24, 1024)
+backbone.vision_backbone.trunk.blocks.6.drop_path: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.6.dropout: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.6.norm2: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.6.mlp.fc1: (1, 72, 72, 4736)
+backbone.vision_backbone.trunk.blocks.6.mlp.act: (1, 72, 72, 4736)
+backbone.vision_backbone.trunk.blocks.6.mlp.drop1: (1, 72, 72, 4736)
+backbone.vision_backbone.trunk.blocks.6.mlp.norm: (1, 72, 72, 4736)
+backbone.vision_backbone.trunk.blocks.6.mlp.fc2: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.6.mlp.drop2: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.6.mlp: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.6.ls2: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.6: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.7.norm1: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.7.attn.qkv: (1, 72, 72, 3072)
+backbone.vision_backbone.trunk.blocks.7.attn.proj: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.7.attn: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.7.ls1: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.7.drop_path: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.7.dropout: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.7.norm2: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.7.mlp.fc1: (1, 72, 72, 4736)
+backbone.vision_backbone.trunk.blocks.7.mlp.act: (1, 72, 72, 4736)
+backbone.vision_backbone.trunk.blocks.7.mlp.drop1: (1, 72, 72, 4736)
+backbone.vision_backbone.trunk.blocks.7.mlp.norm: (1, 72, 72, 4736)
+backbone.vision_backbone.trunk.blocks.7.mlp.fc2: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.7.mlp.drop2: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.7.mlp: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.7.ls2: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.7: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.8.norm1: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.8.attn.qkv: (9, 24, 24, 3072)
+backbone.vision_backbone.trunk.blocks.8.attn.proj: (9, 24, 24, 1024)
+backbone.vision_backbone.trunk.blocks.8.attn: (9, 24, 24, 1024)
+backbone.vision_backbone.trunk.blocks.8.ls1: (9, 24, 24, 1024)
+backbone.vision_backbone.trunk.blocks.8.drop_path: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.8.dropout: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.8.norm2: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.8.mlp.fc1: (1, 72, 72, 4736)
+backbone.vision_backbone.trunk.blocks.8.mlp.act: (1, 72, 72, 4736)
+backbone.vision_backbone.trunk.blocks.8.mlp.drop1: (1, 72, 72, 4736)
+backbone.vision_backbone.trunk.blocks.8.mlp.norm: (1, 72, 72, 4736)
+backbone.vision_backbone.trunk.blocks.8.mlp.fc2: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.8.mlp.drop2: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.8.mlp: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.8.ls2: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.8: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.9.norm1: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.9.attn.qkv: (9, 24, 24, 3072)
+backbone.vision_backbone.trunk.blocks.9.attn.proj: (9, 24, 24, 1024)
+backbone.vision_backbone.trunk.blocks.9.attn: (9, 24, 24, 1024)
+backbone.vision_backbone.trunk.blocks.9.ls1: (9, 24, 24, 1024)
+backbone.vision_backbone.trunk.blocks.9.drop_path: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.9.dropout: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.9.norm2: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.9.mlp.fc1: (1, 72, 72, 4736)
+backbone.vision_backbone.trunk.blocks.9.mlp.act: (1, 72, 72, 4736)
+backbone.vision_backbone.trunk.blocks.9.mlp.drop1: (1, 72, 72, 4736)
+backbone.vision_backbone.trunk.blocks.9.mlp.norm: (1, 72, 72, 4736)
+backbone.vision_backbone.trunk.blocks.9.mlp.fc2: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.9.mlp.drop2: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.9.mlp: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.9.ls2: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.9: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.10.norm1: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.10.attn.qkv: (9, 24, 24, 3072)
+backbone.vision_backbone.trunk.blocks.10.attn.proj: (9, 24, 24, 1024)
+backbone.vision_backbone.trunk.blocks.10.attn: (9, 24, 24, 1024)
+backbone.vision_backbone.trunk.blocks.10.ls1: (9, 24, 24, 1024)
+backbone.vision_backbone.trunk.blocks.10.drop_path: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.10.dropout: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.10.norm2: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.10.mlp.fc1: (1, 72, 72, 4736)
+backbone.vision_backbone.trunk.blocks.10.mlp.act: (1, 72, 72, 4736)
+backbone.vision_backbone.trunk.blocks.10.mlp.drop1: (1, 72, 72, 4736)
+backbone.vision_backbone.trunk.blocks.10.mlp.norm: (1, 72, 72, 4736)
+backbone.vision_backbone.trunk.blocks.10.mlp.fc2: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.10.mlp.drop2: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.10.mlp: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.10.ls2: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.10: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.11.norm1: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.11.attn.qkv: (9, 24, 24, 3072)
+backbone.vision_backbone.trunk.blocks.11.attn.proj: (9, 24, 24, 1024)
+backbone.vision_backbone.trunk.blocks.11.attn: (9, 24, 24, 1024)
+backbone.vision_backbone.trunk.blocks.11.ls1: (9, 24, 24, 1024)
+backbone.vision_backbone.trunk.blocks.11.drop_path: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.11.dropout: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.11.norm2: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.11.mlp.fc1: (1, 72, 72, 4736)
+backbone.vision_backbone.trunk.blocks.11.mlp.act: (1, 72, 72, 4736)
+backbone.vision_backbone.trunk.blocks.11.mlp.drop1: (1, 72, 72, 4736)
+backbone.vision_backbone.trunk.blocks.11.mlp.norm: (1, 72, 72, 4736)
+backbone.vision_backbone.trunk.blocks.11.mlp.fc2: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.11.mlp.drop2: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.11.mlp: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.11.ls2: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.11: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.12.norm1: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.12.attn.qkv: (9, 24, 24, 3072)
+backbone.vision_backbone.trunk.blocks.12.attn.proj: (9, 24, 24, 1024)
+backbone.vision_backbone.trunk.blocks.12.attn: (9, 24, 24, 1024)
+backbone.vision_backbone.trunk.blocks.12.ls1: (9, 24, 24, 1024)
+backbone.vision_backbone.trunk.blocks.12.drop_path: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.12.dropout: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.12.norm2: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.12.mlp.fc1: (1, 72, 72, 4736)
+backbone.vision_backbone.trunk.blocks.12.mlp.act: (1, 72, 72, 4736)
+backbone.vision_backbone.trunk.blocks.12.mlp.drop1: (1, 72, 72, 4736)
+backbone.vision_backbone.trunk.blocks.12.mlp.norm: (1, 72, 72, 4736)
+backbone.vision_backbone.trunk.blocks.12.mlp.fc2: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.12.mlp.drop2: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.12.mlp: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.12.ls2: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.12: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.13.norm1: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.13.attn.qkv: (9, 24, 24, 3072)
+backbone.vision_backbone.trunk.blocks.13.attn.proj: (9, 24, 24, 1024)
+backbone.vision_backbone.trunk.blocks.13.attn: (9, 24, 24, 1024)
+backbone.vision_backbone.trunk.blocks.13.ls1: (9, 24, 24, 1024)
+backbone.vision_backbone.trunk.blocks.13.drop_path: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.13.dropout: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.13.norm2: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.13.mlp.fc1: (1, 72, 72, 4736)
+backbone.vision_backbone.trunk.blocks.13.mlp.act: (1, 72, 72, 4736)
+backbone.vision_backbone.trunk.blocks.13.mlp.drop1: (1, 72, 72, 4736)
+backbone.vision_backbone.trunk.blocks.13.mlp.norm: (1, 72, 72, 4736)
+backbone.vision_backbone.trunk.blocks.13.mlp.fc2: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.13.mlp.drop2: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.13.mlp: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.13.ls2: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.13: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.14.norm1: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.14.attn.qkv: (9, 24, 24, 3072)
+backbone.vision_backbone.trunk.blocks.14.attn.proj: (9, 24, 24, 1024)
+backbone.vision_backbone.trunk.blocks.14.attn: (9, 24, 24, 1024)
+backbone.vision_backbone.trunk.blocks.14.ls1: (9, 24, 24, 1024)
+backbone.vision_backbone.trunk.blocks.14.drop_path: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.14.dropout: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.14.norm2: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.14.mlp.fc1: (1, 72, 72, 4736)
+backbone.vision_backbone.trunk.blocks.14.mlp.act: (1, 72, 72, 4736)
+backbone.vision_backbone.trunk.blocks.14.mlp.drop1: (1, 72, 72, 4736)
+backbone.vision_backbone.trunk.blocks.14.mlp.norm: (1, 72, 72, 4736)
+backbone.vision_backbone.trunk.blocks.14.mlp.fc2: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.14.mlp.drop2: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.14.mlp: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.14.ls2: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.14: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.15.norm1: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.15.attn.qkv: (1, 72, 72, 3072)
+backbone.vision_backbone.trunk.blocks.15.attn.proj: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.15.attn: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.15.ls1: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.15.drop_path: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.15.dropout: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.15.norm2: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.15.mlp.fc1: (1, 72, 72, 4736)
+backbone.vision_backbone.trunk.blocks.15.mlp.act: (1, 72, 72, 4736)
+backbone.vision_backbone.trunk.blocks.15.mlp.drop1: (1, 72, 72, 4736)
+backbone.vision_backbone.trunk.blocks.15.mlp.norm: (1, 72, 72, 4736)
+backbone.vision_backbone.trunk.blocks.15.mlp.fc2: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.15.mlp.drop2: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.15.mlp: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.15.ls2: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.15: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.16.norm1: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.16.attn.qkv: (9, 24, 24, 3072)
+backbone.vision_backbone.trunk.blocks.16.attn.proj: (9, 24, 24, 1024)
+backbone.vision_backbone.trunk.blocks.16.attn: (9, 24, 24, 1024)
+backbone.vision_backbone.trunk.blocks.16.ls1: (9, 24, 24, 1024)
+backbone.vision_backbone.trunk.blocks.16.drop_path: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.16.dropout: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.16.norm2: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.16.mlp.fc1: (1, 72, 72, 4736)
+backbone.vision_backbone.trunk.blocks.16.mlp.act: (1, 72, 72, 4736)
+backbone.vision_backbone.trunk.blocks.16.mlp.drop1: (1, 72, 72, 4736)
+backbone.vision_backbone.trunk.blocks.16.mlp.norm: (1, 72, 72, 4736)
+backbone.vision_backbone.trunk.blocks.16.mlp.fc2: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.16.mlp.drop2: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.16.mlp: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.16.ls2: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.16: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.17.norm1: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.17.attn.qkv: (9, 24, 24, 3072)
+backbone.vision_backbone.trunk.blocks.17.attn.proj: (9, 24, 24, 1024)
+backbone.vision_backbone.trunk.blocks.17.attn: (9, 24, 24, 1024)
+backbone.vision_backbone.trunk.blocks.17.ls1: (9, 24, 24, 1024)
+backbone.vision_backbone.trunk.blocks.17.drop_path: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.17.dropout: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.17.norm2: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.17.mlp.fc1: (1, 72, 72, 4736)
+backbone.vision_backbone.trunk.blocks.17.mlp.act: (1, 72, 72, 4736)
+backbone.vision_backbone.trunk.blocks.17.mlp.drop1: (1, 72, 72, 4736)
+backbone.vision_backbone.trunk.blocks.17.mlp.norm: (1, 72, 72, 4736)
+backbone.vision_backbone.trunk.blocks.17.mlp.fc2: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.17.mlp.drop2: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.17.mlp: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.17.ls2: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.17: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.18.norm1: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.18.attn.qkv: (9, 24, 24, 3072)
+backbone.vision_backbone.trunk.blocks.18.attn.proj: (9, 24, 24, 1024)
+backbone.vision_backbone.trunk.blocks.18.attn: (9, 24, 24, 1024)
+backbone.vision_backbone.trunk.blocks.18.ls1: (9, 24, 24, 1024)
+backbone.vision_backbone.trunk.blocks.18.drop_path: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.18.dropout: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.18.norm2: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.18.mlp.fc1: (1, 72, 72, 4736)
+backbone.vision_backbone.trunk.blocks.18.mlp.act: (1, 72, 72, 4736)
+backbone.vision_backbone.trunk.blocks.18.mlp.drop1: (1, 72, 72, 4736)
+backbone.vision_backbone.trunk.blocks.18.mlp.norm: (1, 72, 72, 4736)
+backbone.vision_backbone.trunk.blocks.18.mlp.fc2: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.18.mlp.drop2: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.18.mlp: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.18.ls2: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.18: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.19.norm1: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.19.attn.qkv: (9, 24, 24, 3072)
+backbone.vision_backbone.trunk.blocks.19.attn.proj: (9, 24, 24, 1024)
+backbone.vision_backbone.trunk.blocks.19.attn: (9, 24, 24, 1024)
+backbone.vision_backbone.trunk.blocks.19.ls1: (9, 24, 24, 1024)
+backbone.vision_backbone.trunk.blocks.19.drop_path: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.19.dropout: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.19.norm2: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.19.mlp.fc1: (1, 72, 72, 4736)
+backbone.vision_backbone.trunk.blocks.19.mlp.act: (1, 72, 72, 4736)
+backbone.vision_backbone.trunk.blocks.19.mlp.drop1: (1, 72, 72, 4736)
+backbone.vision_backbone.trunk.blocks.19.mlp.norm: (1, 72, 72, 4736)
+backbone.vision_backbone.trunk.blocks.19.mlp.fc2: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.19.mlp.drop2: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.19.mlp: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.19.ls2: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.19: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.20.norm1: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.20.attn.qkv: (9, 24, 24, 3072)
+backbone.vision_backbone.trunk.blocks.20.attn.proj: (9, 24, 24, 1024)
+backbone.vision_backbone.trunk.blocks.20.attn: (9, 24, 24, 1024)
+backbone.vision_backbone.trunk.blocks.20.ls1: (9, 24, 24, 1024)
+backbone.vision_backbone.trunk.blocks.20.drop_path: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.20.dropout: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.20.norm2: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.20.mlp.fc1: (1, 72, 72, 4736)
+backbone.vision_backbone.trunk.blocks.20.mlp.act: (1, 72, 72, 4736)
+backbone.vision_backbone.trunk.blocks.20.mlp.drop1: (1, 72, 72, 4736)
+backbone.vision_backbone.trunk.blocks.20.mlp.norm: (1, 72, 72, 4736)
+backbone.vision_backbone.trunk.blocks.20.mlp.fc2: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.20.mlp.drop2: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.20.mlp: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.20.ls2: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.20: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.21.norm1: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.21.attn.qkv: (9, 24, 24, 3072)
+backbone.vision_backbone.trunk.blocks.21.attn.proj: (9, 24, 24, 1024)
+backbone.vision_backbone.trunk.blocks.21.attn: (9, 24, 24, 1024)
+backbone.vision_backbone.trunk.blocks.21.ls1: (9, 24, 24, 1024)
+backbone.vision_backbone.trunk.blocks.21.drop_path: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.21.dropout: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.21.norm2: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.21.mlp.fc1: (1, 72, 72, 4736)
+backbone.vision_backbone.trunk.blocks.21.mlp.act: (1, 72, 72, 4736)
+backbone.vision_backbone.trunk.blocks.21.mlp.drop1: (1, 72, 72, 4736)
+backbone.vision_backbone.trunk.blocks.21.mlp.norm: (1, 72, 72, 4736)
+backbone.vision_backbone.trunk.blocks.21.mlp.fc2: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.21.mlp.drop2: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.21.mlp: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.21.ls2: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.21: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.22.norm1: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.22.attn.qkv: (9, 24, 24, 3072)
+backbone.vision_backbone.trunk.blocks.22.attn.proj: (9, 24, 24, 1024)
+backbone.vision_backbone.trunk.blocks.22.attn: (9, 24, 24, 1024)
+backbone.vision_backbone.trunk.blocks.22.ls1: (9, 24, 24, 1024)
+backbone.vision_backbone.trunk.blocks.22.drop_path: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.22.dropout: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.22.norm2: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.22.mlp.fc1: (1, 72, 72, 4736)
+backbone.vision_backbone.trunk.blocks.22.mlp.act: (1, 72, 72, 4736)
+backbone.vision_backbone.trunk.blocks.22.mlp.drop1: (1, 72, 72, 4736)
+backbone.vision_backbone.trunk.blocks.22.mlp.norm: (1, 72, 72, 4736)
+backbone.vision_backbone.trunk.blocks.22.mlp.fc2: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.22.mlp.drop2: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.22.mlp: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.22.ls2: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.22: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.23.norm1: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.23.attn.qkv: (1, 72, 72, 3072)
+backbone.vision_backbone.trunk.blocks.23.attn.proj: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.23.attn: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.23.ls1: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.23.drop_path: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.23.dropout: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.23.norm2: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.23.mlp.fc1: (1, 72, 72, 4736)
+backbone.vision_backbone.trunk.blocks.23.mlp.act: (1, 72, 72, 4736)
+backbone.vision_backbone.trunk.blocks.23.mlp.drop1: (1, 72, 72, 4736)
+backbone.vision_backbone.trunk.blocks.23.mlp.norm: (1, 72, 72, 4736)
+backbone.vision_backbone.trunk.blocks.23.mlp.fc2: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.23.mlp.drop2: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.23.mlp: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.23.ls2: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.23: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.24.norm1: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.24.attn.qkv: (9, 24, 24, 3072)
+backbone.vision_backbone.trunk.blocks.24.attn.proj: (9, 24, 24, 1024)
+backbone.vision_backbone.trunk.blocks.24.attn: (9, 24, 24, 1024)
+backbone.vision_backbone.trunk.blocks.24.ls1: (9, 24, 24, 1024)
+backbone.vision_backbone.trunk.blocks.24.drop_path: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.24.dropout: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.24.norm2: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.24.mlp.fc1: (1, 72, 72, 4736)
+backbone.vision_backbone.trunk.blocks.24.mlp.act: (1, 72, 72, 4736)
+backbone.vision_backbone.trunk.blocks.24.mlp.drop1: (1, 72, 72, 4736)
+backbone.vision_backbone.trunk.blocks.24.mlp.norm: (1, 72, 72, 4736)
+backbone.vision_backbone.trunk.blocks.24.mlp.fc2: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.24.mlp.drop2: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.24.mlp: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.24.ls2: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.24: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.25.norm1: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.25.attn.qkv: (9, 24, 24, 3072)
+backbone.vision_backbone.trunk.blocks.25.attn.proj: (9, 24, 24, 1024)
+backbone.vision_backbone.trunk.blocks.25.attn: (9, 24, 24, 1024)
+backbone.vision_backbone.trunk.blocks.25.ls1: (9, 24, 24, 1024)
+backbone.vision_backbone.trunk.blocks.25.drop_path: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.25.dropout: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.25.norm2: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.25.mlp.fc1: (1, 72, 72, 4736)
+backbone.vision_backbone.trunk.blocks.25.mlp.act: (1, 72, 72, 4736)
+backbone.vision_backbone.trunk.blocks.25.mlp.drop1: (1, 72, 72, 4736)
+backbone.vision_backbone.trunk.blocks.25.mlp.norm: (1, 72, 72, 4736)
+backbone.vision_backbone.trunk.blocks.25.mlp.fc2: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.25.mlp.drop2: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.25.mlp: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.25.ls2: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.25: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.26.norm1: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.26.attn.qkv: (9, 24, 24, 3072)
+backbone.vision_backbone.trunk.blocks.26.attn.proj: (9, 24, 24, 1024)
+backbone.vision_backbone.trunk.blocks.26.attn: (9, 24, 24, 1024)
+backbone.vision_backbone.trunk.blocks.26.ls1: (9, 24, 24, 1024)
+backbone.vision_backbone.trunk.blocks.26.drop_path: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.26.dropout: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.26.norm2: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.26.mlp.fc1: (1, 72, 72, 4736)
+backbone.vision_backbone.trunk.blocks.26.mlp.act: (1, 72, 72, 4736)
+backbone.vision_backbone.trunk.blocks.26.mlp.drop1: (1, 72, 72, 4736)
+backbone.vision_backbone.trunk.blocks.26.mlp.norm: (1, 72, 72, 4736)
+backbone.vision_backbone.trunk.blocks.26.mlp.fc2: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.26.mlp.drop2: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.26.mlp: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.26.ls2: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.26: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.27.norm1: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.27.attn.qkv: (9, 24, 24, 3072)
+backbone.vision_backbone.trunk.blocks.27.attn.proj: (9, 24, 24, 1024)
+backbone.vision_backbone.trunk.blocks.27.attn: (9, 24, 24, 1024)
+backbone.vision_backbone.trunk.blocks.27.ls1: (9, 24, 24, 1024)
+backbone.vision_backbone.trunk.blocks.27.drop_path: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.27.dropout: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.27.norm2: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.27.mlp.fc1: (1, 72, 72, 4736)
+backbone.vision_backbone.trunk.blocks.27.mlp.act: (1, 72, 72, 4736)
+backbone.vision_backbone.trunk.blocks.27.mlp.drop1: (1, 72, 72, 4736)
+backbone.vision_backbone.trunk.blocks.27.mlp.norm: (1, 72, 72, 4736)
+backbone.vision_backbone.trunk.blocks.27.mlp.fc2: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.27.mlp.drop2: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.27.mlp: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.27.ls2: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.27: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.28.norm1: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.28.attn.qkv: (9, 24, 24, 3072)
+backbone.vision_backbone.trunk.blocks.28.attn.proj: (9, 24, 24, 1024)
+backbone.vision_backbone.trunk.blocks.28.attn: (9, 24, 24, 1024)
+backbone.vision_backbone.trunk.blocks.28.ls1: (9, 24, 24, 1024)
+backbone.vision_backbone.trunk.blocks.28.drop_path: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.28.dropout: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.28.norm2: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.28.mlp.fc1: (1, 72, 72, 4736)
+backbone.vision_backbone.trunk.blocks.28.mlp.act: (1, 72, 72, 4736)
+backbone.vision_backbone.trunk.blocks.28.mlp.drop1: (1, 72, 72, 4736)
+backbone.vision_backbone.trunk.blocks.28.mlp.norm: (1, 72, 72, 4736)
+backbone.vision_backbone.trunk.blocks.28.mlp.fc2: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.28.mlp.drop2: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.28.mlp: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.28.ls2: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.28: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.29.norm1: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.29.attn.qkv: (9, 24, 24, 3072)
+backbone.vision_backbone.trunk.blocks.29.attn.proj: (9, 24, 24, 1024)
+backbone.vision_backbone.trunk.blocks.29.attn: (9, 24, 24, 1024)
+backbone.vision_backbone.trunk.blocks.29.ls1: (9, 24, 24, 1024)
+backbone.vision_backbone.trunk.blocks.29.drop_path: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.29.dropout: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.29.norm2: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.29.mlp.fc1: (1, 72, 72, 4736)
+backbone.vision_backbone.trunk.blocks.29.mlp.act: (1, 72, 72, 4736)
+backbone.vision_backbone.trunk.blocks.29.mlp.drop1: (1, 72, 72, 4736)
+backbone.vision_backbone.trunk.blocks.29.mlp.norm: (1, 72, 72, 4736)
+backbone.vision_backbone.trunk.blocks.29.mlp.fc2: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.29.mlp.drop2: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.29.mlp: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.29.ls2: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.29: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.30.norm1: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.30.attn.qkv: (9, 24, 24, 3072)
+backbone.vision_backbone.trunk.blocks.30.attn.proj: (9, 24, 24, 1024)
+backbone.vision_backbone.trunk.blocks.30.attn: (9, 24, 24, 1024)
+backbone.vision_backbone.trunk.blocks.30.ls1: (9, 24, 24, 1024)
+backbone.vision_backbone.trunk.blocks.30.drop_path: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.30.dropout: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.30.norm2: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.30.mlp.fc1: (1, 72, 72, 4736)
+backbone.vision_backbone.trunk.blocks.30.mlp.act: (1, 72, 72, 4736)
+backbone.vision_backbone.trunk.blocks.30.mlp.drop1: (1, 72, 72, 4736)
+backbone.vision_backbone.trunk.blocks.30.mlp.norm: (1, 72, 72, 4736)
+backbone.vision_backbone.trunk.blocks.30.mlp.fc2: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.30.mlp.drop2: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.30.mlp: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.30.ls2: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.30: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.31.norm1: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.31.attn.qkv: (1, 72, 72, 3072)
+backbone.vision_backbone.trunk.blocks.31.attn.proj: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.31.attn: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.31.ls1: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.31.drop_path: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.31.dropout: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.31.norm2: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.31.mlp.fc1: (1, 72, 72, 4736)
+backbone.vision_backbone.trunk.blocks.31.mlp.act: (1, 72, 72, 4736)
+backbone.vision_backbone.trunk.blocks.31.mlp.drop1: (1, 72, 72, 4736)
+backbone.vision_backbone.trunk.blocks.31.mlp.norm: (1, 72, 72, 4736)
+backbone.vision_backbone.trunk.blocks.31.mlp.fc2: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.31.mlp.drop2: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.31.mlp: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.31.ls2: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.blocks.31: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk.ln_post: (1, 72, 72, 1024)
+backbone.vision_backbone.trunk: [(1, 1024, 72, 72)]
+
+
+backbone.vision_backbone.convs.0.dconv_2x2_0: (1, 512, 144, 144)
+backbone.vision_backbone.convs.0.gelu: (1, 512, 144, 144)
+backbone.vision_backbone.convs.0.dconv_2x2_1: (1, 256, 288, 288)
+backbone.vision_backbone.convs.0.conv_1x1: (1, 256, 288, 288)
+backbone.vision_backbone.convs.0.conv_3x3: (1, 256, 288, 288)
+backbone.vision_backbone.convs.0: (1, 256, 288, 288)
+
+backbone.vision_backbone.position_encoding: (1, 256, 36, 36)
+backbone.vision_backbone.convs.1.dconv_2x2: (1, 512, 144, 144)
+backbone.vision_backbone.convs.1.conv_1x1: (1, 256, 144, 144)
+backbone.vision_backbone.convs.1.conv_3x3: (1, 256, 144, 144)
+backbone.vision_backbone.convs.1: (1, 256, 144, 144)
+
+backbone.vision_backbone.convs.2.conv_1x1: (1, 256, 72, 72)
+backbone.vision_backbone.convs.2.conv_3x3: (1, 256, 72, 72)
+backbone.vision_backbone.convs.2: (1, 256, 72, 72)
+
+backbone.vision_backbone.convs.3.maxpool_2x2: (1, 1024, 36, 36)
+backbone.vision_backbone.convs.3.conv_1x1: (1, 256, 36, 36)
+backbone.vision_backbone.convs.3.conv_3x3: (1, 256, 36, 36)
+backbone.vision_backbone.convs.3: (1, 256, 36, 36)
+
+
+backbone.language_backbone.encoder.token_embedding: (1, 32, 1024)
+
+backbone.language_backbone.encoder.transformer.resblocks.0.ln_1: (1, 32, 1024)
+backbone.language_backbone.encoder.transformer.resblocks.0.attn: [(1, 32, 1024), "<class 'NoneType'>"]
+backbone.language_backbone.encoder.transformer.resblocks.0.ls_1: (1, 32, 1024)
+backbone.language_backbone.encoder.transformer.resblocks.0.ln_2: (1, 32, 1024)
+backbone.language_backbone.encoder.transformer.resblocks.0.mlp.c_fc: (1, 32, 4096)
+backbone.language_backbone.encoder.transformer.resblocks.0.mlp.gelu: (1, 32, 4096)
+backbone.language_backbone.encoder.transformer.resblocks.0.mlp.c_proj: (1, 32, 1024)
+backbone.language_backbone.encoder.transformer.resblocks.0.mlp: (1, 32, 1024)
+backbone.language_backbone.encoder.transformer.resblocks.0.ls_2: (1, 32, 1024)
+backbone.language_backbone.encoder.transformer.resblocks.0: (1, 32, 1024)
+backbone.language_backbone.encoder.transformer.resblocks.1.ln_1: (1, 32, 1024)
+backbone.language_backbone.encoder.transformer.resblocks.1.attn: [(1, 32, 1024), "<class 'NoneType'>"]
+backbone.language_backbone.encoder.transformer.resblocks.1.ls_1: (1, 32, 1024)
+backbone.language_backbone.encoder.transformer.resblocks.1.ln_2: (1, 32, 1024)
+backbone.language_backbone.encoder.transformer.resblocks.1.mlp.c_fc: (1, 32, 4096)
+backbone.language_backbone.encoder.transformer.resblocks.1.mlp.gelu: (1, 32, 4096)
+backbone.language_backbone.encoder.transformer.resblocks.1.mlp.c_proj: (1, 32, 1024)
+backbone.language_backbone.encoder.transformer.resblocks.1.mlp: (1, 32, 1024)
+backbone.language_backbone.encoder.transformer.resblocks.1.ls_2: (1, 32, 1024)
+backbone.language_backbone.encoder.transformer.resblocks.1: (1, 32, 1024)
+backbone.language_backbone.encoder.transformer.resblocks.2.ln_1: (1, 32, 1024)
+backbone.language_backbone.encoder.transformer.resblocks.2.attn: [(1, 32, 1024), "<class 'NoneType'>"]
+backbone.language_backbone.encoder.transformer.resblocks.2.ls_1: (1, 32, 1024)
+backbone.language_backbone.encoder.transformer.resblocks.2.ln_2: (1, 32, 1024)
+backbone.language_backbone.encoder.transformer.resblocks.2.mlp.c_fc: (1, 32, 4096)
+backbone.language_backbone.encoder.transformer.resblocks.2.mlp.gelu: (1, 32, 4096)
+backbone.language_backbone.encoder.transformer.resblocks.2.mlp.c_proj: (1, 32, 1024)
+backbone.language_backbone.encoder.transformer.resblocks.2.mlp: (1, 32, 1024)
+backbone.language_backbone.encoder.transformer.resblocks.2.ls_2: (1, 32, 1024)
+backbone.language_backbone.encoder.transformer.resblocks.2: (1, 32, 1024)
+backbone.language_backbone.encoder.transformer.resblocks.3.ln_1: (1, 32, 1024)
+backbone.language_backbone.encoder.transformer.resblocks.3.attn: [(1, 32, 1024), "<class 'NoneType'>"]
+backbone.language_backbone.encoder.transformer.resblocks.3.ls_1: (1, 32, 1024)
+backbone.language_backbone.encoder.transformer.resblocks.3.ln_2: (1, 32, 1024)
+backbone.language_backbone.encoder.transformer.resblocks.3.mlp.c_fc: (1, 32, 4096)
+backbone.language_backbone.encoder.transformer.resblocks.3.mlp.gelu: (1, 32, 4096)
+backbone.language_backbone.encoder.transformer.resblocks.3.mlp.c_proj: (1, 32, 1024)
+backbone.language_backbone.encoder.transformer.resblocks.3.mlp: (1, 32, 1024)
+backbone.language_backbone.encoder.transformer.resblocks.3.ls_2: (1, 32, 1024)
+backbone.language_backbone.encoder.transformer.resblocks.3: (1, 32, 1024)
+backbone.language_backbone.encoder.transformer.resblocks.4.ln_1: (1, 32, 1024)
+backbone.language_backbone.encoder.transformer.resblocks.4.attn: [(1, 32, 1024), "<class 'NoneType'>"]
+backbone.language_backbone.encoder.transformer.resblocks.4.ls_1: (1, 32, 1024)
+backbone.language_backbone.encoder.transformer.resblocks.4.ln_2: (1, 32, 1024)
+backbone.language_backbone.encoder.transformer.resblocks.4.mlp.c_fc: (1, 32, 4096)
+backbone.language_backbone.encoder.transformer.resblocks.4.mlp.gelu: (1, 32, 4096)
+backbone.language_backbone.encoder.transformer.resblocks.4.mlp.c_proj: (1, 32, 1024)
+backbone.language_backbone.encoder.transformer.resblocks.4.mlp: (1, 32, 1024)
+backbone.language_backbone.encoder.transformer.resblocks.4.ls_2: (1, 32, 1024)
+backbone.language_backbone.encoder.transformer.resblocks.4: (1, 32, 1024)
+backbone.language_backbone.encoder.transformer.resblocks.5.ln_1: (1, 32, 1024)
+backbone.language_backbone.encoder.transformer.resblocks.5.attn: [(1, 32, 1024), "<class 'NoneType'>"]
+backbone.language_backbone.encoder.transformer.resblocks.5.ls_1: (1, 32, 1024)
+backbone.language_backbone.encoder.transformer.resblocks.5.ln_2: (1, 32, 1024)
+backbone.language_backbone.encoder.transformer.resblocks.5.mlp.c_fc: (1, 32, 4096)
+backbone.language_backbone.encoder.transformer.resblocks.5.mlp.gelu: (1, 32, 4096)
+backbone.language_backbone.encoder.transformer.resblocks.5.mlp.c_proj: (1, 32, 1024)
+backbone.language_backbone.encoder.transformer.resblocks.5.mlp: (1, 32, 1024)
+backbone.language_backbone.encoder.transformer.resblocks.5.ls_2: (1, 32, 1024)
+backbone.language_backbone.encoder.transformer.resblocks.5: (1, 32, 1024)
+backbone.language_backbone.encoder.transformer.resblocks.6.ln_1: (1, 32, 1024)
+backbone.language_backbone.encoder.transformer.resblocks.6.attn: [(1, 32, 1024), "<class 'NoneType'>"]
+backbone.language_backbone.encoder.transformer.resblocks.6.ls_1: (1, 32, 1024)
+backbone.language_backbone.encoder.transformer.resblocks.6.ln_2: (1, 32, 1024)
+backbone.language_backbone.encoder.transformer.resblocks.6.mlp.c_fc: (1, 32, 4096)
+backbone.language_backbone.encoder.transformer.resblocks.6.mlp.gelu: (1, 32, 4096)
+backbone.language_backbone.encoder.transformer.resblocks.6.mlp.c_proj: (1, 32, 1024)
+backbone.language_backbone.encoder.transformer.resblocks.6.mlp: (1, 32, 1024)
+backbone.language_backbone.encoder.transformer.resblocks.6.ls_2: (1, 32, 1024)
+backbone.language_backbone.encoder.transformer.resblocks.6: (1, 32, 1024)
+backbone.language_backbone.encoder.transformer.resblocks.7.ln_1: (1, 32, 1024)
+backbone.language_backbone.encoder.transformer.resblocks.7.attn: [(1, 32, 1024), "<class 'NoneType'>"]
+backbone.language_backbone.encoder.transformer.resblocks.7.ls_1: (1, 32, 1024)
+backbone.language_backbone.encoder.transformer.resblocks.7.ln_2: (1, 32, 1024)
+backbone.language_backbone.encoder.transformer.resblocks.7.mlp.c_fc: (1, 32, 4096)
+backbone.language_backbone.encoder.transformer.resblocks.7.mlp.gelu: (1, 32, 4096)
+backbone.language_backbone.encoder.transformer.resblocks.7.mlp.c_proj: (1, 32, 1024)
+backbone.language_backbone.encoder.transformer.resblocks.7.mlp: (1, 32, 1024)
+backbone.language_backbone.encoder.transformer.resblocks.7.ls_2: (1, 32, 1024)
+backbone.language_backbone.encoder.transformer.resblocks.7: (1, 32, 1024)
+backbone.language_backbone.encoder.transformer.resblocks.8.ln_1: (1, 32, 1024)
+backbone.language_backbone.encoder.transformer.resblocks.8.attn: [(1, 32, 1024), "<class 'NoneType'>"]
+backbone.language_backbone.encoder.transformer.resblocks.8.ls_1: (1, 32, 1024)
+backbone.language_backbone.encoder.transformer.resblocks.8.ln_2: (1, 32, 1024)
+backbone.language_backbone.encoder.transformer.resblocks.8.mlp.c_fc: (1, 32, 4096)
+backbone.language_backbone.encoder.transformer.resblocks.8.mlp.gelu: (1, 32, 4096)
+backbone.language_backbone.encoder.transformer.resblocks.8.mlp.c_proj: (1, 32, 1024)
+backbone.language_backbone.encoder.transformer.resblocks.8.mlp: (1, 32, 1024)
+backbone.language_backbone.encoder.transformer.resblocks.8.ls_2: (1, 32, 1024)
+backbone.language_backbone.encoder.transformer.resblocks.8: (1, 32, 1024)
+backbone.language_backbone.encoder.transformer.resblocks.9.ln_1: (1, 32, 1024)
+backbone.language_backbone.encoder.transformer.resblocks.9.attn: [(1, 32, 1024), "<class 'NoneType'>"]
+backbone.language_backbone.encoder.transformer.resblocks.9.ls_1: (1, 32, 1024)
+backbone.language_backbone.encoder.transformer.resblocks.9.ln_2: (1, 32, 1024)
+backbone.language_backbone.encoder.transformer.resblocks.9.mlp.c_fc: (1, 32, 4096)
+backbone.language_backbone.encoder.transformer.resblocks.9.mlp.gelu: (1, 32, 4096)
+backbone.language_backbone.encoder.transformer.resblocks.9.mlp.c_proj: (1, 32, 1024)
+backbone.language_backbone.encoder.transformer.resblocks.9.mlp: (1, 32, 1024)
+backbone.language_backbone.encoder.transformer.resblocks.9.ls_2: (1, 32, 1024)
+backbone.language_backbone.encoder.transformer.resblocks.9: (1, 32, 1024)
+backbone.language_backbone.encoder.transformer.resblocks.10.ln_1: (1, 32, 1024)
+backbone.language_backbone.encoder.transformer.resblocks.10.attn: [(1, 32, 1024), "<class 'NoneType'>"]
+backbone.language_backbone.encoder.transformer.resblocks.10.ls_1: (1, 32, 1024)
+backbone.language_backbone.encoder.transformer.resblocks.10.ln_2: (1, 32, 1024)
+backbone.language_backbone.encoder.transformer.resblocks.10.mlp.c_fc: (1, 32, 4096)
+backbone.language_backbone.encoder.transformer.resblocks.10.mlp.gelu: (1, 32, 4096)
+backbone.language_backbone.encoder.transformer.resblocks.10.mlp.c_proj: (1, 32, 1024)
+backbone.language_backbone.encoder.transformer.resblocks.10.mlp: (1, 32, 1024)
+backbone.language_backbone.encoder.transformer.resblocks.10.ls_2: (1, 32, 1024)
+backbone.language_backbone.encoder.transformer.resblocks.10: (1, 32, 1024)
+backbone.language_backbone.encoder.transformer.resblocks.11.ln_1: (1, 32, 1024)
+backbone.language_backbone.encoder.transformer.resblocks.11.attn: [(1, 32, 1024), "<class 'NoneType'>"]
+backbone.language_backbone.encoder.transformer.resblocks.11.ls_1: (1, 32, 1024)
+backbone.language_backbone.encoder.transformer.resblocks.11.ln_2: (1, 32, 1024)
+backbone.language_backbone.encoder.transformer.resblocks.11.mlp.c_fc: (1, 32, 4096)
+backbone.language_backbone.encoder.transformer.resblocks.11.mlp.gelu: (1, 32, 4096)
+backbone.language_backbone.encoder.transformer.resblocks.11.mlp.c_proj: (1, 32, 1024)
+backbone.language_backbone.encoder.transformer.resblocks.11.mlp: (1, 32, 1024)
+backbone.language_backbone.encoder.transformer.resblocks.11.ls_2: (1, 32, 1024)
+backbone.language_backbone.encoder.transformer.resblocks.11: (1, 32, 1024)
+backbone.language_backbone.encoder.transformer.resblocks.12.ln_1: (1, 32, 1024)
+backbone.language_backbone.encoder.transformer.resblocks.12.attn: [(1, 32, 1024), "<class 'NoneType'>"]
+backbone.language_backbone.encoder.transformer.resblocks.12.ls_1: (1, 32, 1024)
+backbone.language_backbone.encoder.transformer.resblocks.12.ln_2: (1, 32, 1024)
+backbone.language_backbone.encoder.transformer.resblocks.12.mlp.c_fc: (1, 32, 4096)
+backbone.language_backbone.encoder.transformer.resblocks.12.mlp.gelu: (1, 32, 4096)
+backbone.language_backbone.encoder.transformer.resblocks.12.mlp.c_proj: (1, 32, 1024)
+backbone.language_backbone.encoder.transformer.resblocks.12.mlp: (1, 32, 1024)
+backbone.language_backbone.encoder.transformer.resblocks.12.ls_2: (1, 32, 1024)
+backbone.language_backbone.encoder.transformer.resblocks.12: (1, 32, 1024)
+backbone.language_backbone.encoder.transformer.resblocks.13.ln_1: (1, 32, 1024)
+backbone.language_backbone.encoder.transformer.resblocks.13.attn: [(1, 32, 1024), "<class 'NoneType'>"]
+backbone.language_backbone.encoder.transformer.resblocks.13.ls_1: (1, 32, 1024)
+backbone.language_backbone.encoder.transformer.resblocks.13.ln_2: (1, 32, 1024)
+backbone.language_backbone.encoder.transformer.resblocks.13.mlp.c_fc: (1, 32, 4096)
+backbone.language_backbone.encoder.transformer.resblocks.13.mlp.gelu: (1, 32, 4096)
+backbone.language_backbone.encoder.transformer.resblocks.13.mlp.c_proj: (1, 32, 1024)
+backbone.language_backbone.encoder.transformer.resblocks.13.mlp: (1, 32, 1024)
+backbone.language_backbone.encoder.transformer.resblocks.13.ls_2: (1, 32, 1024)
+backbone.language_backbone.encoder.transformer.resblocks.13: (1, 32, 1024)
+backbone.language_backbone.encoder.transformer.resblocks.14.ln_1: (1, 32, 1024)
+backbone.language_backbone.encoder.transformer.resblocks.14.attn: [(1, 32, 1024), "<class 'NoneType'>"]
+backbone.language_backbone.encoder.transformer.resblocks.14.ls_1: (1, 32, 1024)
+backbone.language_backbone.encoder.transformer.resblocks.14.ln_2: (1, 32, 1024)
+backbone.language_backbone.encoder.transformer.resblocks.14.mlp.c_fc: (1, 32, 4096)
+backbone.language_backbone.encoder.transformer.resblocks.14.mlp.gelu: (1, 32, 4096)
+backbone.language_backbone.encoder.transformer.resblocks.14.mlp.c_proj: (1, 32, 1024)
+backbone.language_backbone.encoder.transformer.resblocks.14.mlp: (1, 32, 1024)
+backbone.language_backbone.encoder.transformer.resblocks.14.ls_2: (1, 32, 1024)
+backbone.language_backbone.encoder.transformer.resblocks.14: (1, 32, 1024)
+backbone.language_backbone.encoder.transformer.resblocks.15.ln_1: (1, 32, 1024)
+backbone.language_backbone.encoder.transformer.resblocks.15.attn: [(1, 32, 1024), "<class 'NoneType'>"]
+backbone.language_backbone.encoder.transformer.resblocks.15.ls_1: (1, 32, 1024)
+backbone.language_backbone.encoder.transformer.resblocks.15.ln_2: (1, 32, 1024)
+backbone.language_backbone.encoder.transformer.resblocks.15.mlp.c_fc: (1, 32, 4096)
+backbone.language_backbone.encoder.transformer.resblocks.15.mlp.gelu: (1, 32, 4096)
+backbone.language_backbone.encoder.transformer.resblocks.15.mlp.c_proj: (1, 32, 1024)
+backbone.language_backbone.encoder.transformer.resblocks.15.mlp: (1, 32, 1024)
+backbone.language_backbone.encoder.transformer.resblocks.15.ls_2: (1, 32, 1024)
+backbone.language_backbone.encoder.transformer.resblocks.15: (1, 32, 1024)
+backbone.language_backbone.encoder.transformer.resblocks.16.ln_1: (1, 32, 1024)
+backbone.language_backbone.encoder.transformer.resblocks.16.attn: [(1, 32, 1024), "<class 'NoneType'>"]
+backbone.language_backbone.encoder.transformer.resblocks.16.ls_1: (1, 32, 1024)
+backbone.language_backbone.encoder.transformer.resblocks.16.ln_2: (1, 32, 1024)
+backbone.language_backbone.encoder.transformer.resblocks.16.mlp.c_fc: (1, 32, 4096)
+backbone.language_backbone.encoder.transformer.resblocks.16.mlp.gelu: (1, 32, 4096)
+backbone.language_backbone.encoder.transformer.resblocks.16.mlp.c_proj: (1, 32, 1024)
+backbone.language_backbone.encoder.transformer.resblocks.16.mlp: (1, 32, 1024)
+backbone.language_backbone.encoder.transformer.resblocks.16.ls_2: (1, 32, 1024)
+backbone.language_backbone.encoder.transformer.resblocks.16: (1, 32, 1024)
+backbone.language_backbone.encoder.transformer.resblocks.17.ln_1: (1, 32, 1024)
+backbone.language_backbone.encoder.transformer.resblocks.17.attn: [(1, 32, 1024), "<class 'NoneType'>"]
+backbone.language_backbone.encoder.transformer.resblocks.17.ls_1: (1, 32, 1024)
+backbone.language_backbone.encoder.transformer.resblocks.17.ln_2: (1, 32, 1024)
+backbone.language_backbone.encoder.transformer.resblocks.17.mlp.c_fc: (1, 32, 4096)
+backbone.language_backbone.encoder.transformer.resblocks.17.mlp.gelu: (1, 32, 4096)
+backbone.language_backbone.encoder.transformer.resblocks.17.mlp.c_proj: (1, 32, 1024)
+backbone.language_backbone.encoder.transformer.resblocks.17.mlp: (1, 32, 1024)
+backbone.language_backbone.encoder.transformer.resblocks.17.ls_2: (1, 32, 1024)
+backbone.language_backbone.encoder.transformer.resblocks.17: (1, 32, 1024)
+backbone.language_backbone.encoder.transformer.resblocks.18.ln_1: (1, 32, 1024)
+backbone.language_backbone.encoder.transformer.resblocks.18.attn: [(1, 32, 1024), "<class 'NoneType'>"]
+backbone.language_backbone.encoder.transformer.resblocks.18.ls_1: (1, 32, 1024)
+backbone.language_backbone.encoder.transformer.resblocks.18.ln_2: (1, 32, 1024)
+backbone.language_backbone.encoder.transformer.resblocks.18.mlp.c_fc: (1, 32, 4096)
+backbone.language_backbone.encoder.transformer.resblocks.18.mlp.gelu: (1, 32, 4096)
+backbone.language_backbone.encoder.transformer.resblocks.18.mlp.c_proj: (1, 32, 1024)
+backbone.language_backbone.encoder.transformer.resblocks.18.mlp: (1, 32, 1024)
+backbone.language_backbone.encoder.transformer.resblocks.18.ls_2: (1, 32, 1024)
+backbone.language_backbone.encoder.transformer.resblocks.18: (1, 32, 1024)
+backbone.language_backbone.encoder.transformer.resblocks.19.ln_1: (1, 32, 1024)
+backbone.language_backbone.encoder.transformer.resblocks.19.attn: [(1, 32, 1024), "<class 'NoneType'>"]
+backbone.language_backbone.encoder.transformer.resblocks.19.ls_1: (1, 32, 1024)
+backbone.language_backbone.encoder.transformer.resblocks.19.ln_2: (1, 32, 1024)
+backbone.language_backbone.encoder.transformer.resblocks.19.mlp.c_fc: (1, 32, 4096)
+backbone.language_backbone.encoder.transformer.resblocks.19.mlp.gelu: (1, 32, 4096)
+backbone.language_backbone.encoder.transformer.resblocks.19.mlp.c_proj: (1, 32, 1024)
+backbone.language_backbone.encoder.transformer.resblocks.19.mlp: (1, 32, 1024)
+backbone.language_backbone.encoder.transformer.resblocks.19.ls_2: (1, 32, 1024)
+backbone.language_backbone.encoder.transformer.resblocks.19: (1, 32, 1024)
+backbone.language_backbone.encoder.transformer.resblocks.20.ln_1: (1, 32, 1024)
+backbone.language_backbone.encoder.transformer.resblocks.20.attn: [(1, 32, 1024), "<class 'NoneType'>"]
+backbone.language_backbone.encoder.transformer.resblocks.20.ls_1: (1, 32, 1024)
+backbone.language_backbone.encoder.transformer.resblocks.20.ln_2: (1, 32, 1024)
+backbone.language_backbone.encoder.transformer.resblocks.20.mlp.c_fc: (1, 32, 4096)
+backbone.language_backbone.encoder.transformer.resblocks.20.mlp.gelu: (1, 32, 4096)
+backbone.language_backbone.encoder.transformer.resblocks.20.mlp.c_proj: (1, 32, 1024)
+backbone.language_backbone.encoder.transformer.resblocks.20.mlp: (1, 32, 1024)
+backbone.language_backbone.encoder.transformer.resblocks.20.ls_2: (1, 32, 1024)
+backbone.language_backbone.encoder.transformer.resblocks.20: (1, 32, 1024)
+backbone.language_backbone.encoder.transformer.resblocks.21.ln_1: (1, 32, 1024)
+backbone.language_backbone.encoder.transformer.resblocks.21.attn: [(1, 32, 1024), "<class 'NoneType'>"]
+backbone.language_backbone.encoder.transformer.resblocks.21.ls_1: (1, 32, 1024)
+backbone.language_backbone.encoder.transformer.resblocks.21.ln_2: (1, 32, 1024)
+backbone.language_backbone.encoder.transformer.resblocks.21.mlp.c_fc: (1, 32, 4096)
+backbone.language_backbone.encoder.transformer.resblocks.21.mlp.gelu: (1, 32, 4096)
+backbone.language_backbone.encoder.transformer.resblocks.21.mlp.c_proj: (1, 32, 1024)
+backbone.language_backbone.encoder.transformer.resblocks.21.mlp: (1, 32, 1024)
+backbone.language_backbone.encoder.transformer.resblocks.21.ls_2: (1, 32, 1024)
+backbone.language_backbone.encoder.transformer.resblocks.21: (1, 32, 1024)
+backbone.language_backbone.encoder.transformer.resblocks.22.ln_1: (1, 32, 1024)
+backbone.language_backbone.encoder.transformer.resblocks.22.attn: [(1, 32, 1024), "<class 'NoneType'>"]
+backbone.language_backbone.encoder.transformer.resblocks.22.ls_1: (1, 32, 1024)
+backbone.language_backbone.encoder.transformer.resblocks.22.ln_2: (1, 32, 1024)
+backbone.language_backbone.encoder.transformer.resblocks.22.mlp.c_fc: (1, 32, 4096)
+backbone.language_backbone.encoder.transformer.resblocks.22.mlp.gelu: (1, 32, 4096)
+backbone.language_backbone.encoder.transformer.resblocks.22.mlp.c_proj: (1, 32, 1024)
+backbone.language_backbone.encoder.transformer.resblocks.22.mlp: (1, 32, 1024)
+backbone.language_backbone.encoder.transformer.resblocks.22.ls_2: (1, 32, 1024)
+backbone.language_backbone.encoder.transformer.resblocks.22: (1, 32, 1024)
+backbone.language_backbone.encoder.transformer.resblocks.23.ln_1: (1, 32, 1024)
+backbone.language_backbone.encoder.transformer.resblocks.23.attn: [(1, 32, 1024), "<class 'NoneType'>"]
+backbone.language_backbone.encoder.transformer.resblocks.23.ls_1: (1, 32, 1024)
+backbone.language_backbone.encoder.transformer.resblocks.23.ln_2: (1, 32, 1024)
+backbone.language_backbone.encoder.transformer.resblocks.23.mlp.c_fc: (1, 32, 4096)
+backbone.language_backbone.encoder.transformer.resblocks.23.mlp.gelu: (1, 32, 4096)
+backbone.language_backbone.encoder.transformer.resblocks.23.mlp.c_proj: (1, 32, 1024)
+backbone.language_backbone.encoder.transformer.resblocks.23.mlp: (1, 32, 1024)
+backbone.language_backbone.encoder.transformer.resblocks.23.ls_2: (1, 32, 1024)
+backbone.language_backbone.encoder.transformer.resblocks.23: (1, 32, 1024)
+backbone.language_backbone.encoder.transformer: (1, 32, 1024)
+backbone.language_backbone.encoder.ln_final: (1, 32, 1024)
+backbone.language_backbone.encoder: [(1, 32, 512), (1, 32, 1024)]
+backbone.language_backbone.resizer: (32, 1, 256)
+backbone.language_backbone: [(1, 32), (32, 1, 256), (32, 1, 1024)]
+geometry_encoder.img_pre_norm: (5184, 1, 256)
+geometry_encoder.points_direct_project: (0, 1, 256)
+geometry_encoder.points_pool_project: (0, 1, 256)
+geometry_encoder.points_pos_enc_project: (0, 1, 256)
+geometry_encoder.label_embed: (0, 1, 256)
+geometry_encoder.boxes_direct_project: (0, 1, 256)
+geometry_encoder.boxes_pool_project: (0, 256, 1, 1)
+geometry_encoder.boxes_pos_enc_project: (0, 1, 256)
+geometry_encoder.final_proj: (1, 1, 256)
+geometry_encoder.norm: (1, 1, 256)
+geometry_encoder.encode.0.norm1: (1, 1, 256)
+geometry_encoder.encode.0.self_attn: [(1, 1, 256), "<class 'NoneType'>"]
+geometry_encoder.encode.0.dropout1: (1, 1, 256)
+geometry_encoder.encode.0.norm2: (1, 1, 256)
+geometry_encoder.encode.0.cross_attn_image: [(1, 1, 256), "<class 'NoneType'>"]
+geometry_encoder.encode.0.dropout2: (1, 1, 256)
+geometry_encoder.encode.0.norm3: (1, 1, 256)
+geometry_encoder.encode.0.linear1: (1, 1, 2048)
+geometry_encoder.encode.0.dropout: (1, 1, 2048)
+geometry_encoder.encode.0.linear2: (1, 1, 256)
+geometry_encoder.encode.0.dropout3: (1, 1, 256)
+geometry_encoder.encode.0: (1, 1, 256)
+geometry_encoder.encode.1.norm1: (1, 1, 256)
+geometry_encoder.encode.1.self_attn: [(1, 1, 256), "<class 'NoneType'>"]
+geometry_encoder.encode.1.dropout1: (1, 1, 256)
+geometry_encoder.encode.1.norm2: (1, 1, 256)
+geometry_encoder.encode.1.cross_attn_image: [(1, 1, 256), "<class 'NoneType'>"]
+geometry_encoder.encode.1.dropout2: (1, 1, 256)
+geometry_encoder.encode.1.norm3: (1, 1, 256)
+geometry_encoder.encode.1.linear1: (1, 1, 2048)
+geometry_encoder.encode.1.dropout: (1, 1, 2048)
+geometry_encoder.encode.1.linear2: (1, 1, 256)
+geometry_encoder.encode.1.dropout3: (1, 1, 256)
+geometry_encoder.encode.1: (1, 1, 256)
+geometry_encoder.encode.2.norm1: (1, 1, 256)
+geometry_encoder.encode.2.self_attn: [(1, 1, 256), "<class 'NoneType'>"]
+geometry_encoder.encode.2.dropout1: (1, 1, 256)
+geometry_encoder.encode.2.norm2: (1, 1, 256)
+geometry_encoder.encode.2.cross_attn_image: [(1, 1, 256), "<class 'NoneType'>"]
+geometry_encoder.encode.2.dropout2: (1, 1, 256)
+geometry_encoder.encode.2.norm3: (1, 1, 256)
+geometry_encoder.encode.2.linear1: (1, 1, 2048)
+geometry_encoder.encode.2.dropout: (1, 1, 2048)
+geometry_encoder.encode.2.linear2: (1, 1, 256)
+geometry_encoder.encode.2.dropout3: (1, 1, 256)
+geometry_encoder.encode.2: (1, 1, 256)
+geometry_encoder.encode_norm: (1, 1, 256)
+geometry_encoder: [(1, 1, 256), (1, 1)]
+
+transformer.encoder.layers.0.norm1: (1, 5184, 256)
+transformer.encoder.layers.0.self_attn: [(1, 5184, 256), "<class 'NoneType'>"]
+transformer.encoder.layers.0.dropout1: (1, 5184, 256)
+transformer.encoder.layers.0.norm2: (1, 5184, 256)
+transformer.encoder.layers.0.cross_attn_image: [(1, 5184, 256), "<class 'NoneType'>"]
+transformer.encoder.layers.0.dropout2: (1, 5184, 256)
+transformer.encoder.layers.0.norm3: (1, 5184, 256)
+transformer.encoder.layers.0.linear1: (1, 5184, 2048)
+transformer.encoder.layers.0.dropout: (1, 5184, 2048)
+transformer.encoder.layers.0.linear2: (1, 5184, 256)
+transformer.encoder.layers.0.dropout3: (1, 5184, 256)
+transformer.encoder.layers.0: (1, 5184, 256)
+transformer.encoder.layers.1.norm1: (1, 5184, 256)
+transformer.encoder.layers.1.self_attn: [(1, 5184, 256), "<class 'NoneType'>"]
+transformer.encoder.layers.1.dropout1: (1, 5184, 256)
+transformer.encoder.layers.1.norm2: (1, 5184, 256)
+transformer.encoder.layers.1.cross_attn_image: [(1, 5184, 256), "<class 'NoneType'>"]
+transformer.encoder.layers.1.dropout2: (1, 5184, 256)
+transformer.encoder.layers.1.norm3: (1, 5184, 256)
+transformer.encoder.layers.1.linear1: (1, 5184, 2048)
+transformer.encoder.layers.1.dropout: (1, 5184, 2048)
+transformer.encoder.layers.1.linear2: (1, 5184, 256)
+transformer.encoder.layers.1.dropout3: (1, 5184, 256)
+transformer.encoder.layers.1: (1, 5184, 256)
+transformer.encoder.layers.2.norm1: (1, 5184, 256)
+transformer.encoder.layers.2.self_attn: [(1, 5184, 256), "<class 'NoneType'>"]
+transformer.encoder.layers.2.dropout1: (1, 5184, 256)
+transformer.encoder.layers.2.norm2: (1, 5184, 256)
+transformer.encoder.layers.2.cross_attn_image: [(1, 5184, 256), "<class 'NoneType'>"]
+transformer.encoder.layers.2.dropout2: (1, 5184, 256)
+transformer.encoder.layers.2.norm3: (1, 5184, 256)
+transformer.encoder.layers.2.linear1: (1, 5184, 2048)
+transformer.encoder.layers.2.dropout: (1, 5184, 2048)
+transformer.encoder.layers.2.linear2: (1, 5184, 256)
+transformer.encoder.layers.2.dropout3: (1, 5184, 256)
+transformer.encoder.layers.2: (1, 5184, 256)
+transformer.encoder.layers.3.norm1: (1, 5184, 256)
+transformer.encoder.layers.3.self_attn: [(1, 5184, 256), "<class 'NoneType'>"]
+transformer.encoder.layers.3.dropout1: (1, 5184, 256)
+transformer.encoder.layers.3.norm2: (1, 5184, 256)
+transformer.encoder.layers.3.cross_attn_image: [(1, 5184, 256), "<class 'NoneType'>"]
+transformer.encoder.layers.3.dropout2: (1, 5184, 256)
+transformer.encoder.layers.3.norm3: (1, 5184, 256)
+transformer.encoder.layers.3.linear1: (1, 5184, 2048)
+transformer.encoder.layers.3.dropout: (1, 5184, 2048)
+transformer.encoder.layers.3.linear2: (1, 5184, 256)
+transformer.encoder.layers.3.dropout3: (1, 5184, 256)
+transformer.encoder.layers.3: (1, 5184, 256)
+transformer.encoder.layers.4.norm1: (1, 5184, 256)
+transformer.encoder.layers.4.self_attn: [(1, 5184, 256), "<class 'NoneType'>"]
+transformer.encoder.layers.4.dropout1: (1, 5184, 256)
+transformer.encoder.layers.4.norm2: (1, 5184, 256)
+transformer.encoder.layers.4.cross_attn_image: [(1, 5184, 256), "<class 'NoneType'>"]
+transformer.encoder.layers.4.dropout2: (1, 5184, 256)
+transformer.encoder.layers.4.norm3: (1, 5184, 256)
+transformer.encoder.layers.4.linear1: (1, 5184, 2048)
+transformer.encoder.layers.4.dropout: (1, 5184, 2048)
+transformer.encoder.layers.4.linear2: (1, 5184, 256)
+transformer.encoder.layers.4.dropout3: (1, 5184, 256)
+transformer.encoder.layers.4: (1, 5184, 256)
+transformer.encoder.layers.5.norm1: (1, 5184, 256)
+transformer.encoder.layers.5.self_attn: [(1, 5184, 256), "<class 'NoneType'>"]
+transformer.encoder.layers.5.dropout1: (1, 5184, 256)
+transformer.encoder.layers.5.norm2: (1, 5184, 256)
+transformer.encoder.layers.5.cross_attn_image: [(1, 5184, 256), "<class 'NoneType'>"]
+transformer.encoder.layers.5.dropout2: (1, 5184, 256)
+transformer.encoder.layers.5.norm3: (1, 5184, 256)
+transformer.encoder.layers.5.linear1: (1, 5184, 2048)
+transformer.encoder.layers.5.dropout: (1, 5184, 2048)
+transformer.encoder.layers.5.linear2: (1, 5184, 256)
+transformer.encoder.layers.5.dropout3: (1, 5184, 256)
+transformer.encoder.layers.5: (1, 5184, 256)
+transformer.encoder: {'memory': (5184, 1, 256), 'padding_mask': "<class 'NoneType'>", 'pos_embed': (5184, 1, 256), 'memory_text': (33, 1, 256), 'level_start_index': (1,), 'spatial_shapes': (1, 2), 'valid_ratios': (1, 1, 2)}
+
+transformer.decoder.ref_point_head.layers.0: (200, 1, 256)
+transformer.decoder.ref_point_head.drop: (200, 1, 256)
+transformer.decoder.ref_point_head.layers.1: (200, 1, 256)
+transformer.decoder.ref_point_head.out_norm: (200, 1, 256)
+transformer.decoder.ref_point_head: (200, 1, 256)
+
+transformer.decoder.boxRPB_embed_x.layers.0: (1, 200, 72, 256)
+transformer.decoder.boxRPB_embed_x.drop: (1, 200, 72, 256)
+transformer.decoder.boxRPB_embed_x.layers.1: (1, 200, 72, 8)
+transformer.decoder.boxRPB_embed_x.out_norm: (1, 200, 72, 8)
+transformer.decoder.boxRPB_embed_x: (1, 200, 72, 8)
+transformer.decoder.boxRPB_embed_y.layers.0: (1, 200, 72, 256)
+transformer.decoder.boxRPB_embed_y.drop: (1, 200, 72, 256)
+transformer.decoder.boxRPB_embed_y.layers.1: (1, 200, 72, 8)
+transformer.decoder.boxRPB_embed_y.out_norm: (1, 200, 72, 8)
+transformer.decoder.boxRPB_embed_y: (1, 200, 72, 8)
+
+transformer.decoder.layers.0.self_attn: [(201, 1, 256), (1, 201, 201)]
+transformer.decoder.layers.0.dropout2: (201, 1, 256)
+transformer.decoder.layers.0.norm2: (201, 1, 256)
+transformer.decoder.layers.0.ca_text: [(201, 1, 256), (1, 201, 33)]
+transformer.decoder.layers.0.catext_dropout: (201, 1, 256)
+transformer.decoder.layers.0.catext_norm: (201, 1, 256)
+transformer.decoder.layers.0.cross_attn: [(201, 1, 256), "<class 'NoneType'>"]
+transformer.decoder.layers.0.dropout1: (201, 1, 256)
+transformer.decoder.layers.0.norm1: (201, 1, 256)
+transformer.decoder.layers.0.linear1: (201, 1, 2048)
+transformer.decoder.layers.0.dropout3: (201, 1, 2048)
+transformer.decoder.layers.0.linear2: (201, 1, 256)
+transformer.decoder.layers.0.dropout4: (201, 1, 256)
+transformer.decoder.layers.0.norm3: (201, 1, 256)
+transformer.decoder.layers.0: [(200, 1, 256), (1, 1, 256)]
+transformer.decoder.norm: (200, 1, 256)
+
+transformer.decoder.bbox_embed.layers.0: (6, 1, 200, 256)
+transformer.decoder.bbox_embed.drop: (6, 1, 200, 256)
+transformer.decoder.bbox_embed.layers.1: (6, 1, 200, 256)
+transformer.decoder.bbox_embed.layers.2: (6, 1, 200, 4)
+transformer.decoder.bbox_embed.out_norm: (6, 1, 200, 4)
+transformer.decoder.bbox_embed: (6, 1, 200, 4)
+
+transformer.decoder.presence_token_out_norm: (1, 1, 256)
+transformer.decoder.presence_token_head.layers.0: (1, 1, 256)
+transformer.decoder.presence_token_head.drop: (1, 1, 256)
+transformer.decoder.presence_token_head.layers.1: (1, 1, 256)
+transformer.decoder.presence_token_head.layers.2: (1, 1, 1)
+transformer.decoder.presence_token_head.out_norm: (1, 1, 1)
+transformer.decoder.presence_token_head: (1, 1, 1)
+
+transformer.decoder.layers.1.self_attn: [(201, 1, 256), (1, 201, 201)]
+transformer.decoder.layers.1.dropout2: (201, 1, 256)
+transformer.decoder.layers.1.norm2: (201, 1, 256)
+transformer.decoder.layers.1.ca_text: [(201, 1, 256), (1, 201, 33)]
+transformer.decoder.layers.1.catext_dropout: (201, 1, 256)
+transformer.decoder.layers.1.catext_norm: (201, 1, 256)
+transformer.decoder.layers.1.cross_attn: [(201, 1, 256), "<class 'NoneType'>"]
+transformer.decoder.layers.1.dropout1: (201, 1, 256)
+transformer.decoder.layers.1.norm1: (201, 1, 256)
+transformer.decoder.layers.1.linear1: (201, 1, 2048)
+transformer.decoder.layers.1.dropout3: (201, 1, 2048)
+transformer.decoder.layers.1.linear2: (201, 1, 256)
+transformer.decoder.layers.1.dropout4: (201, 1, 256)
+transformer.decoder.layers.1.norm3: (201, 1, 256)
+transformer.decoder.layers.1: [(200, 1, 256), (1, 1, 256)]
+transformer.decoder.layers.2.self_attn: [(201, 1, 256), (1, 201, 201)]
+transformer.decoder.layers.2.dropout2: (201, 1, 256)
+transformer.decoder.layers.2.norm2: (201, 1, 256)
+transformer.decoder.layers.2.ca_text: [(201, 1, 256), (1, 201, 33)]
+transformer.decoder.layers.2.catext_dropout: (201, 1, 256)
+transformer.decoder.layers.2.catext_norm: (201, 1, 256)
+transformer.decoder.layers.2.cross_attn: [(201, 1, 256), "<class 'NoneType'>"]
+transformer.decoder.layers.2.dropout1: (201, 1, 256)
+transformer.decoder.layers.2.norm1: (201, 1, 256)
+transformer.decoder.layers.2.linear1: (201, 1, 2048)
+transformer.decoder.layers.2.dropout3: (201, 1, 2048)
+transformer.decoder.layers.2.linear2: (201, 1, 256)
+transformer.decoder.layers.2.dropout4: (201, 1, 256)
+transformer.decoder.layers.2.norm3: (201, 1, 256)
+transformer.decoder.layers.2: [(200, 1, 256), (1, 1, 256)]
+transformer.decoder.layers.3.self_attn: [(201, 1, 256), (1, 201, 201)]
+transformer.decoder.layers.3.dropout2: (201, 1, 256)
+transformer.decoder.layers.3.norm2: (201, 1, 256)
+transformer.decoder.layers.3.ca_text: [(201, 1, 256), (1, 201, 33)]
+transformer.decoder.layers.3.catext_dropout: (201, 1, 256)
+transformer.decoder.layers.3.catext_norm: (201, 1, 256)
+transformer.decoder.layers.3.cross_attn: [(201, 1, 256), "<class 'NoneType'>"]
+transformer.decoder.layers.3.dropout1: (201, 1, 256)
+transformer.decoder.layers.3.norm1: (201, 1, 256)
+transformer.decoder.layers.3.linear1: (201, 1, 2048)
+transformer.decoder.layers.3.dropout3: (201, 1, 2048)
+transformer.decoder.layers.3.linear2: (201, 1, 256)
+transformer.decoder.layers.3.dropout4: (201, 1, 256)
+transformer.decoder.layers.3.norm3: (201, 1, 256)
+transformer.decoder.layers.3: [(200, 1, 256), (1, 1, 256)]
+transformer.decoder.layers.4.self_attn: [(201, 1, 256), (1, 201, 201)]
+transformer.decoder.layers.4.dropout2: (201, 1, 256)
+transformer.decoder.layers.4.norm2: (201, 1, 256)
+transformer.decoder.layers.4.ca_text: [(201, 1, 256), (1, 201, 33)]
+transformer.decoder.layers.4.catext_dropout: (201, 1, 256)
+transformer.decoder.layers.4.catext_norm: (201, 1, 256)
+transformer.decoder.layers.4.cross_attn: [(201, 1, 256), "<class 'NoneType'>"]
+transformer.decoder.layers.4.dropout1: (201, 1, 256)
+transformer.decoder.layers.4.norm1: (201, 1, 256)
+transformer.decoder.layers.4.linear1: (201, 1, 2048)
+transformer.decoder.layers.4.dropout3: (201, 1, 2048)
+transformer.decoder.layers.4.linear2: (201, 1, 256)
+transformer.decoder.layers.4.dropout4: (201, 1, 256)
+transformer.decoder.layers.4.norm3: (201, 1, 256)
+transformer.decoder.layers.4: [(200, 1, 256), (1, 1, 256)]
+transformer.decoder.layers.5.self_attn: [(201, 1, 256), (1, 201, 201)]
+transformer.decoder.layers.5.dropout2: (201, 1, 256)
+transformer.decoder.layers.5.norm2: (201, 1, 256)
+transformer.decoder.layers.5.ca_text: [(201, 1, 256), (1, 201, 33)]
+transformer.decoder.layers.5.catext_dropout: (201, 1, 256)
+transformer.decoder.layers.5.catext_norm: (201, 1, 256)
+transformer.decoder.layers.5.cross_attn: [(201, 1, 256), "<class 'NoneType'>"]
+transformer.decoder.layers.5.dropout1: (201, 1, 256)
+transformer.decoder.layers.5.norm1: (201, 1, 256)
+transformer.decoder.layers.5.linear1: (201, 1, 2048)
+transformer.decoder.layers.5.dropout3: (201, 1, 2048)
+transformer.decoder.layers.5.linear2: (201, 1, 256)
+transformer.decoder.layers.5.dropout4: (201, 1, 256)
+transformer.decoder.layers.5.norm3: (201, 1, 256)
+transformer.decoder.layers.5: [(200, 1, 256), (1, 1, 256)]
+transformer.decoder: [(6, 200, 1, 256), (6, 200, 1, 4), (6, 1, 1), (1, 1, 256)]
+
+dot_prod_scoring.prompt_mlp.layers.0: (33, 1, 2048)
+dot_prod_scoring.prompt_mlp.drop: (33, 1, 2048)
+dot_prod_scoring.prompt_mlp.layers.1: (33, 1, 256)
+dot_prod_scoring.prompt_mlp.out_norm: (33, 1, 256)
+dot_prod_scoring.prompt_mlp: (33, 1, 256)
+dot_prod_scoring.prompt_proj: (1, 256)
+
+dot_prod_scoring.hs_proj: (6, 1, 200, 256)
+dot_prod_scoring: (6, 1, 200, 1)
+
+segmentation_head.cross_attn_norm: (5184, 1, 256)
+segmentation_head.cross_attend_prompt: [(5184, 1, 256), "<class 'NoneType'>"]
+segmentation_head.pixel_decoder.conv_layers.0: (1, 256, 144, 144)
+segmentation_head.pixel_decoder.norms.0: (1, 256, 144, 144)
+segmentation_head.pixel_decoder.conv_layers.1: (1, 256, 288, 288)
+segmentation_head.pixel_decoder.norms.1: (1, 256, 288, 288)
+segmentation_head.pixel_decoder: (1, 256, 288, 288)
+segmentation_head.instance_seg_head: (1, 256, 288, 288)
+segmentation_head.mask_predictor.mask_embed.layers.0: (1, 200, 256)
+segmentation_head.mask_predictor.mask_embed.drop: (1, 200, 256)
+segmentation_head.mask_predictor.mask_embed.layers.1: (1, 200, 256)
+segmentation_head.mask_predictor.mask_embed.layers.2: (1, 200, 256)
+segmentation_head.mask_predictor.mask_embed.out_norm: (1, 200, 256)
+segmentation_head.mask_predictor.mask_embed: (1, 200, 256)
+segmentation_head.mask_predictor: (1, 200, 288, 288)
+segmentation_head.semantic_seg_head: (1, 1, 288, 288)
+segmentation_head: {'pred_masks': (1, 200, 288, 288), 'semantic_seg': (1, 1, 288, 288), 'presence_logit': "<class 'NoneType'>"}
+`;
+
+        function parseData(data) {
+            const root = { name: "SAM3", children: {}, value: null };
+            const lines = data.trim().split('\n');
+            lines.forEach(line => {
+                line = line.trim();
+                if (!line) return;
+                const parts = line.split(': ');
+                if (parts.length < 2) return;
+                const path = parts[0];
+                const value = parts.slice(1).join(': ');
+                const keys = path.split('.');
+                let current = root;
+                keys.forEach((key) => {
+                    if (!current.children[key]) {
+                        current.children[key] = { name: key, children: {}, value: null };
+                    }
+                    current = current.children[key];
+                });
+                current.value = value;
+            });
+            return root;
+        }
+
+        function isNumericArray(node) {
+            const keys = Object.keys(node.children);
+            if (keys.length === 0) return false;
+            let numericCount = 0;
+            keys.forEach(k => {
+                if (!isNaN(parseInt(k))) numericCount++;
+            });
+            return numericCount > 0 && numericCount === keys.length;
+        }
+
+        function createDetailView(node) {
+            const panel = document.getElementById('detail-panel');
+            const title = document.getElementById('panel-title');
+            const content = document.getElementById('panel-content');
+
+            title.textContent = node.name.toUpperCase();
+            content.innerHTML = '';
+
+            if (node.value) {
+                const div = document.createElement('div');
+                div.className = 'detail-item';
+                div.innerHTML = `<div class="detail-key">Output Shape</div><div class="detail-value">${node.value}</div>`;
+                content.appendChild(div);
+            }
+
+            Object.keys(node.children).forEach(key => {
+                const child = node.children[key];
+                const div = document.createElement('div');
+                div.className = 'detail-item';
+                let val = child.value || '(Container)';
+                div.innerHTML = `<div class="detail-key">${key}</div><div class="detail-value">${val}</div>`;
+                content.appendChild(div);
+            });
+
+            panel.classList.add('visible');
+        }
+
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('#detail-panel') && !e.target.closest('.chip') && !e.target.closest('.module')) {
+                document.getElementById('detail-panel').classList.remove('visible');
+                document.querySelectorAll('.chip.active').forEach(c => c.classList.remove('active'));
+            }
+        });
+
+        function renderNode(node, container, level = 0) {
+            if (level === 0) {
+                Object.keys(node.children).forEach(key => {
+                    renderNode(node.children[key], container, level + 1);
+                });
+                return;
+            }
+
+            if (level === 1) {
+                const section = document.createElement('div');
+                section.className = 'section-container';
+
+                const title = document.createElement('div');
+                title.className = 'section-title';
+                title.textContent = node.name;
+                section.appendChild(title);
+
+                const content = document.createElement('div');
+                content.className = 'section-content';
+                section.appendChild(content);
+
+                Object.keys(node.children).forEach(key => {
+                    renderNode(node.children[key], content, level + 1);
+                });
+
+                container.appendChild(section);
+
+                const line = document.createElement('div');
+                line.className = 'connector-line';
+                container.appendChild(line);
+                return;
+            }
+
+            if (isNumericArray(node)) {
+                const gridContainer = document.createElement('div');
+                gridContainer.className = 'block-grid-container';
+
+                const gridTitle = document.createElement('div');
+                gridTitle.className = 'block-grid-title';
+                gridTitle.textContent = node.name + ' [' + Object.keys(node.children).length + ']';
+                gridContainer.appendChild(gridTitle);
+
+                const grid = document.createElement('div');
+                grid.className = 'block-grid';
+
+                const sortedKeys = Object.keys(node.children).sort((a, b) => parseInt(a) - parseInt(b));
+
+                sortedKeys.forEach(key => {
+                    const child = node.children[key];
+                    const chip = document.createElement('div');
+                    chip.className = 'chip';
+                    chip.textContent = key;
+                    chip.title = `${node.name}.${key}`;
+
+                    chip.onclick = (e) => {
+                        e.stopPropagation();
+                        document.querySelectorAll('.chip.active').forEach(c => c.classList.remove('active'));
+                        chip.classList.add('active');
+                        createDetailView(child);
+                    };
+
+                    grid.appendChild(chip);
+                });
+
+                gridContainer.appendChild(grid);
+
+                const wrapper = document.createElement('div');
+                wrapper.className = 'module';
+                wrapper.style.flex = "100%";
+                wrapper.appendChild(gridContainer);
+                container.appendChild(wrapper);
+                return;
+            }
+
+            const module = document.createElement('div');
+            module.className = 'module';
+
+            const name = document.createElement('div');
+            name.className = 'module-name';
+            name.textContent = node.name;
+            module.appendChild(name);
+
+            if (node.value) {
+                const dim = document.createElement('div');
+                dim.className = 'module-dim';
+                dim.textContent = node.value;
+                module.appendChild(dim);
+            }
+
+            const childKeys = Object.keys(node.children);
+            if (childKeys.length > 0) {
+                module.style.cursor = 'pointer';
+                module.onclick = (e) => {
+                    e.stopPropagation();
+                    createDetailView(node);
+                };
+
+                const subContainer = document.createElement('div');
+                subContainer.style.marginTop = '10px';
+                subContainer.style.display = 'flex';
+                subContainer.style.flexDirection = 'column';
+                subContainer.style.gap = '10px';
+
+                childKeys.forEach(key => {
+                    renderNode(node.children[key], subContainer, level + 1);
+                });
+                module.appendChild(subContainer);
+            }
+
+            container.appendChild(module);
+        }
+
+        const treeData = parseData(rawData);
+        const rootContainer = document.getElementById('main-root');
+        renderNode(treeData, rootContainer);
+
+
+
+    </script>
+</body>
+
+</html>
